@@ -1,13 +1,13 @@
 {
-  "name": "ituter_server",
+  "name": "itutor_server",
   "version": "1.0.0",
-  "description": "Server Side Of ITuter",
+  "description": "Server Side Of ITutor",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js"
   },
-  "author": "ITuter",
+  "author": "ITutor",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
