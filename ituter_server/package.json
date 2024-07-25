@@ -1,0 +1,16 @@
+{
+  "name": "ituter_server",
+  "version": "1.0.0",
+  "description": "Server Side Of ITuter",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js"
+  },
+  "author": "ITuter",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4"
+  }
+}
