@@ -126,20 +126,38 @@ app.post('/api/v1/enrollCourse', async (req, res) => {
             message: "Username & Course ID cannot be empty."
         });
     }
-    await connection.execute("INSERT INTO users_course (username, course_id, enroll_date) VALUES (?, ?, ?)", [username, course_id, enroll_date], function (err, result, fields) {
-        if (err instanceof Error) {
-            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
+    await connection.execute("SELECT * FROM courses WHERE course_id = ? LIMIT 1", [course_id], function (err, result, fields) {
+        if (result.length == 0) {
             return res.json({
                 status: 400,
-                code: err.code,
-                message: err.message
+                message: "Cannot find this course id."
             });
         } else {
-            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} ${username} enrolled to ${course_id}`);
-            return res.json({
-                status: 200,
-                message: "Enrolled Successfully"
-            });
+            connection.execute("SELECT username FROM users_course WHERE course_id = ?", [course_id], function (err, result, fields) {
+                if (result.length > 0) {
+                    return res.json({
+                        status: 400,
+                        message: "Already enrolled to this course."
+                    });
+                } else {
+                    connection.execute("INSERT INTO users_course (username, course_id, enroll_date) VALUES (?, ?, ?)", [username, course_id, enroll_date], function (err, result, fields) {
+                        if (err instanceof Error) {
+                            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
+                            return res.json({
+                                status: 400,
+                                code: err.code,
+                                message: err.message
+                            });
+                        } else {
+                            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} ${username} enrolled to ${course_id}`);
+                            return res.json({
+                                status: 200,
+                                message: "Enrolled Successfully"
+                            });
+                        }
+                    });
+                }
+            })
         }
     });
 });
@@ -159,7 +177,6 @@ app.post('/api/v1/createCourse', async (req, res) => {
             message: "Owner & Course Name & Course Description cannot be empty."
         });
     }
-    await connection.execute('DELETE FROM courses WHERE owner = "it66070032"');
     await connection.execute('INSERT INTO courses (owner, course_id, course_name, course_desc, expired_date) VALUES (?, ?, ?, ?, ?)', [owner, course_id, course_name, course_desc, expired_date], function (err, result, fields) {
         if (err instanceof Error) {
             log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
