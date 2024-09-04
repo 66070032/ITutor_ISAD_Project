@@ -11,6 +11,7 @@ let api_port = 3100;
 const getDate = () => {
     let currentDate = new Date();
     return {
+        curDate: currentDate,
         date: String(currentDate.getDate()).padStart(2, '0'),
         month: String(currentDate.getMonth() + 1).padStart(2, '0'),
         year: currentDate.getFullYear(),
@@ -18,6 +19,16 @@ const getDate = () => {
         minute: String(currentDate.getMinutes()).padStart(2, '0'),
         second: String(currentDate.getSeconds()).padStart(2, '0')
     }
+}
+
+const generateString = (length) => {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
 }
 
 const validateEmail = (email) => {
@@ -100,6 +111,68 @@ app.post('/api/v1/auth/authReg', async (req, res) => {
             return res.json({
                 status: 200,
                 message: "Register Successfully"
+            });
+        }
+    });
+});
+
+app.post('/api/v1/enrollCourse', async (req, res) => {
+    let username = req.body.username;
+    let course_id = req.body.course_id;
+    let enroll_date = getDate().curDate;
+    if (username == undefined || course_id == undefined) {
+        return res.json({
+            status: 400,
+            message: "Username & Course ID cannot be empty."
+        });
+    }
+    await connection.execute("INSERT INTO users_course (username, course_id, enroll_date) VALUES (?, ?, ?)", [username, course_id, enroll_date], function (err, result, fields) {
+        if (err instanceof Error) {
+            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
+            return res.json({
+                status: 400,
+                code: err.code,
+                message: err.message
+            });
+        } else {
+            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} ${username} enrolled to ${course_id}`);
+            return res.json({
+                status: 200,
+                message: "Enrolled Successfully"
+            });
+        }
+    });
+});
+
+app.post('/api/v1/createCourse', async (req, res) => {
+    let owner = req.body.owner;
+    let course_id = await generateString(10);
+    let course_name = req.body.course_name;
+    let course_desc = req.body.course_desc;
+
+    let expired_date = new Date();
+    expired_date.setDate(expired_date.getDate() + 7);
+
+    if (owner == undefined || course_name == undefined || course_desc == undefined) {
+        return res.json({
+            status: 400,
+            message: "Owner & Course Name & Course Description cannot be empty."
+        });
+    }
+    await connection.execute('DELETE FROM courses WHERE owner = "it66070032"');
+    await connection.execute('INSERT INTO courses (owner, course_id, course_name, course_desc, expired_date) VALUES (?, ?, ?, ?, ?)', [owner, course_id, course_name, course_desc, expired_date], function (err, result, fields) {
+        if (err instanceof Error) {
+            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
+            return res.json({
+                status: 400,
+                code: err.code,
+                message: err.message
+            });
+        } else {
+            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} ${owner} created ${course_id}`);
+            return res.json({
+                status: 200,
+                message: "Created Successfully"
             });
         }
     });
