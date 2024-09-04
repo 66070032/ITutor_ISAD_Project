@@ -8,6 +8,17 @@ const chalk = require('chalk');
 let log = console.log;
 let api_port = 3100;
 
+// 1. * - Second (0-59)
+// 2. * - Minute (0-59)
+// 3. * - Hour (0-23)
+// 4. * - Day of the month (1-31)
+// 5. * - Month (1-12)
+// 6. * - Day of the week (0-6), where 0 = Sunday
+// const cron = require('node-cron');
+// cron.schedule('*/30 * * * * *', () => {
+//     console.log('Run task every 30 sec');
+// });
+
 const getDate = () => {
     let currentDate = new Date();
     return {
