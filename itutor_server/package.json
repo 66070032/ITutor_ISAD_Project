@@ -10,6 +10,8 @@
   "author": "ITutor",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "chalk": "^4.1.2",
     "express": "^4.19.2",
     "mysql2": "^3.11.0",
     "nodemon": "^3.1.4"
