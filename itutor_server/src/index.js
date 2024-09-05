@@ -144,6 +144,12 @@ app.post('/api/v1/enrollCourse', async (req, res) => {
                 message: "Cannot find this course id."
             });
         } else {
+            if (result[0].is_approve == 0) {
+                return res.json({
+                    status: 400,
+                    message: "Course is not approved yet."
+                });
+            }
             connection.execute("SELECT username FROM users_course WHERE course_id = ?", [course_id], function (err, result, fields) {
                 if (result.length > 0) {
                     return res.json({
@@ -179,8 +185,8 @@ app.post('/api/v1/createCourse', async (req, res) => {
     let course_name = req.body.course_name;
     let course_desc = req.body.course_desc;
 
-    let expired_date = new Date();
-    expired_date.setDate(expired_date.getDate() + 7);
+    // let expired_date = new Date();
+    // expired_date.setDate(expired_date.getDate() + 7);
 
     if (owner == undefined || course_name == undefined || course_desc == undefined) {
         return res.json({
@@ -188,7 +194,7 @@ app.post('/api/v1/createCourse', async (req, res) => {
             message: "Owner & Course Name & Course Description cannot be empty."
         });
     }
-    await connection.execute('INSERT INTO courses (owner, course_id, course_name, course_desc, expired_date) VALUES (?, ?, ?, ?, ?)', [owner, course_id, course_name, course_desc, expired_date], function (err, result, fields) {
+    await connection.execute('INSERT INTO courses (owner, course_id, course_name, course_desc) VALUES (?, ?, ?, ?)', [owner, course_id, course_name, course_desc], function (err, result, fields) {
         if (err instanceof Error) {
             log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
             return res.json({
@@ -204,4 +210,57 @@ app.post('/api/v1/createCourse', async (req, res) => {
             });
         }
     });
+});
+
+app.put('/api/v1/approveCourse', async (req, res) => {
+    let course_id = req.body.course_id;
+    let isApprove = req.body.is_approve;
+    if (course_id == undefined || isApprove == undefined) {
+        return res.json({
+            status: 400,
+            message: "Course ID & Approve Status cannot be empty."
+        });
+    }
+
+    let create_date = new Date();
+    let expired_date = new Date();
+    expired_date.setDate(expired_date.getDate() + 7);
+
+    await connection.execute("SELECT course_id FROM courses WHERE course_id = ?", [course_id], function (err, result, fields) {
+        if (result.length == 0) {
+            return res.json({
+                status: 400,
+                message: "Cannot find this course id."
+            });
+        } else {
+            if (isApprove == 1) {
+                connection.execute("UPDATE courses SET is_approve = ?, create_date = ?, expired_date = ? WHERE course_id = ?", [isApprove, create_date, expired_date, course_id], function (err, result, fields) {
+                    if (err instanceof Error) {
+                        log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
+                        return res.json({
+                            status: 400,
+                            code: err.code,
+                            message: err.message
+                        });
+                    } else {
+                        log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} ${course_id} approved successfully.`);
+                        return res.json({
+                            status: 200,
+                            message: "Approved Successfully"
+                        });
+                    }
+                });
+            } else {
+                log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} ${course_id} remove successfully.`);
+                connection.execute("DELETE FROM courses WHERE course_id = ?", [course_id]);
+                return res.json({
+                    status: 200,
+                    message: "Remove Successfully"
+                });
+            }
+            
+        }
+    })
+
+   
 });
