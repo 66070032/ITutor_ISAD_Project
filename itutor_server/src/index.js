@@ -184,17 +184,15 @@ app.post('/api/v1/createCourse', async (req, res) => {
     let course_id = await generateString(10);
     let course_name = req.body.course_name;
     let course_desc = req.body.course_desc;
+    let course_type = req.body.course_type;
 
-    // let expired_date = new Date();
-    // expired_date.setDate(expired_date.getDate() + 7);
-
-    if (owner == undefined || course_name == undefined || course_desc == undefined) {
+    if (owner == undefined || course_name == undefined || course_desc == undefined || course_type == undefined) {
         return res.json({
             status: 400,
-            message: "Owner & Course Name & Course Description cannot be empty."
+            message: "Owner & Course Name & Course Description & Course Type cannot be empty."
         });
     }
-    await connection.execute('INSERT INTO courses (owner, course_id, course_name, course_desc) VALUES (?, ?, ?, ?)', [owner, course_id, course_name, course_desc], function (err, result, fields) {
+    await connection.execute('INSERT INTO courses (owner, course_id, course_name, course_desc, course_type) VALUES (?, ?, ?, ?, ?)', [owner, course_id, course_name, course_desc, course_type], function (err, result, fields) {
         if (err instanceof Error) {
             log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
             return res.json({
