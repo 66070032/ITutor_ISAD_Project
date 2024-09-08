@@ -55,8 +55,7 @@ app.listen(api_port, () => {
 app.use(express.json());
 
 app.get('/api/v1/auth/authLogin', async (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
+    let {username, password} = req.body;
     if (username == undefined || password == undefined) {
         return res.json({
             status: 401,
@@ -65,7 +64,7 @@ app.get('/api/v1/auth/authLogin', async (req, res) => {
     }
     await connection.execute("SELECT password FROM users WHERE username = ? LIMIT 1", [username], function (err, result, fields) {
         if (result.length > 0) {
-            if (bcrypt.compareSync(req.body.password, result[0].password)) {
+            if (bcrypt.compareSync(password, result[0].password)) {
                 log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} Login Successfully for ${chalk.green(username)}`);
                 return res.json({
                     status: 200,
@@ -82,9 +81,7 @@ app.get('/api/v1/auth/authLogin', async (req, res) => {
 });
 
 app.post('/api/v1/auth/authReg', async (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
-    let email = req.body.email;
+    let {username, password, email} = req.body;
     if (username == undefined || password == undefined || email == undefined) {
         return res.json({
             status: 400,
@@ -128,8 +125,7 @@ app.post('/api/v1/auth/authReg', async (req, res) => {
 });
 
 app.post('/api/v1/enrollCourse', async (req, res) => {
-    let username = req.body.username;
-    let course_id = req.body.course_id;
+    let {username, course_id} = req.body;
     let enroll_date = getDate().curDate;
     if (username == undefined || course_id == undefined) {
         return res.json({
@@ -180,11 +176,8 @@ app.post('/api/v1/enrollCourse', async (req, res) => {
 });
 
 app.post('/api/v1/createCourse', async (req, res) => {
-    let owner = req.body.owner;
+    let {owner, course_name, course_desc, course_type} = req.body;
     let course_id = await generateString(10);
-    let course_name = req.body.course_name;
-    let course_desc = req.body.course_desc;
-    let course_type = req.body.course_type;
 
     if (owner == undefined || course_name == undefined || course_desc == undefined || course_type == undefined) {
         return res.json({
@@ -211,9 +204,8 @@ app.post('/api/v1/createCourse', async (req, res) => {
 });
 
 app.put('/api/v1/approveCourse', async (req, res) => {
-    let course_id = req.body.course_id;
-    let isApprove = req.body.is_approve;
-    if (course_id == undefined || isApprove == undefined) {
+    let {course_id, is_approve} = req.body;
+    if (course_id == undefined || is_approve == undefined) {
         return res.json({
             status: 400,
             message: "Course ID & Approve Status cannot be empty."
@@ -231,8 +223,8 @@ app.put('/api/v1/approveCourse', async (req, res) => {
                 message: "Cannot find this course id."
             });
         } else {
-            if (isApprove == 1) {
-                connection.execute("UPDATE courses SET is_approve = ?, create_date = ?, expired_date = ? WHERE course_id = ?", [isApprove, create_date, expired_date, course_id], function (err, result, fields) {
+            if (is_approve == 1) {
+                connection.execute("UPDATE courses SET is_approve = ?, create_date = ?, expired_date = ? WHERE course_id = ?", [is_approve, create_date, expired_date, course_id], function (err, result, fields) {
                     if (err instanceof Error) {
                         log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
                         return res.json({
