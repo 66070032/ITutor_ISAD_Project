@@ -23,7 +23,9 @@ export default function Home() {
               <Link href="/sign-in">
                 <button className="px-3">SIGN IN</button>
               </Link>
-              <button className="px-3">SIGN UP</button>
+              <Link href="/sign-up">
+                <button className="px-3">SIGN UP</button>
+              </Link>
           </div>
         </div>
       </div>
