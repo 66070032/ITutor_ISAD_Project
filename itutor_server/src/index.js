@@ -103,6 +103,7 @@ app.get('/auth/login', async (req, res) => {
         const [rows, fields] = await db.execute(sql, values);
 
         if (rows.length == 0) {
+            log(`${chalk.red(`[LOGIN]`)} Failed Login: ${chalk.red(`${user_id}`)}`);
             return res.status(404).json({status: 404, message: "Username or Password is incorrect."});
         }
 
@@ -115,6 +116,7 @@ app.get('/auth/login', async (req, res) => {
         return res.status(404).json({status: 404, code: error.code, message: error.message});
     }
 
+    log(`${chalk.red(`[LOGIN]`)} Failed Login: ${chalk.red(`${user_id}`)}`);
     return res.status(404).json({status: 404, message: "Username or Password is incorrect."});
     
 });
