@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
+.text-stroke-blue {
+  -webkit-text-stroke: 2px #19588a; 
+}
+.text-stroke-white {
+  -webkit-text-stroke: 2px #ffffff; 
+}
+
+
+
 /* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
