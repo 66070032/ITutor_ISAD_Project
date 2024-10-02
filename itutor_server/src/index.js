@@ -1,12 +1,15 @@
 const express = require("express");
 const app = new express();
-const {connection} = require('../db_connection');
 
 const bcrypt = require('bcrypt');
 const chalk = require('chalk');
+const mysql = require('mysql2/promise');
+const morgan = require('morgan');
 
-let log = console.log;
 let api_port = 3100;
+let log = (msg) => {
+    console.log(`${chalk.blueBright(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}]`)}`, msg);
+}
 
 // 1. * - Second (0-59)
 // 2. * - Minute (0-59)
@@ -48,209 +51,98 @@ const validateEmail = (email) => {
     );
 };
 
-app.listen(api_port, () => {
+const delay = async (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+let db;
+async function getConnection() {
+    try {
+        db = await mysql.createConnection({
+            host: 'db.itutor.jokeped.net',
+            user: 'itutor',
+            password: 'v(2@jwAjq1uK7PCp',
+            database: 'itutor',
+        });
+        log(`Database established successfully`);
+    } catch (error) {
+        log(error);
+    }
+}
+
+app.listen(api_port, async () => {
+    await delay(500);
+    console.clear();
+    console.log(`
+ ____  ______  __ __  ______   ___   ____        ____  ____ ____ 
+|    ||      ||  |  ||      | /   \\ |    \\      /    ||    \\    |
+ |  | |      ||  |  ||      ||     ||  D  )    |  o  ||  o  )  | 
+ |  | |_|  |_||  |  ||_|  |_||  O  ||    /     |     ||   _/|  | 
+ |  |   |  |  |  :  |  |  |  |     ||    \\     |  _  ||  |  |  | 
+ |  |   |  |  |     |  |  |  |     ||  .  \\    |  |  ||  |  |  | 
+|____|  |__|   \\__,_|  |__|   \\___/ |__|\\_|    |__|__||__| |____|
+        `)
     log(`Server started on port ${chalk.bgBlue.whiteBright(` ${api_port} `)}`);
+    getConnection();
 });
 
 app.use(express.json());
+app.use(morgan('dev')); // You can use 'tiny', 'combined', 'dev', or define your own format.
 
-app.get('/api/v1/auth/authLogin', async (req, res) => {
-    let {username, password} = req.body;
-    if (username == undefined || password == undefined) {
-        return res.json({
-            status: 401,
-            message: "Username & Password cannot be empty."
-        });
+app.get('/auth/login', async (req, res) => {
+    const {user_id, password} = req.body;
+
+    if (!user_id || !password) {
+        return res.status(404).json({status: 404, message: "Username or Password must be submit to form."});
     }
-    await connection.execute("SELECT password FROM users WHERE username = ? LIMIT 1", [username], function (err, result, fields) {
-        if (result.length > 0) {
-            if (bcrypt.compareSync(password, result[0].password)) {
-                log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} Login Successfully for ${chalk.green(username)}`);
-                return res.json({
-                    status: 200,
-                    message: "Login Success"
-                });
-            }
+
+    try {
+        const sql = `SELECT * FROM users WHERE user_id = ?`;
+        const values = [user_id];
+
+        const [rows, fields] = await db.execute(sql, values);
+
+        if (rows.length == 0) {
+            return res.status(404).json({status: 404, message: "Username or Password is incorrect."});
         }
-        log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[401]')} Login Failed for ${chalk.red(username)}`);
-        return res.json({
-            status: 401,
-            message: "Unauthorized"
-        });
-    });
-});
 
-app.post('/api/v1/auth/authReg', async (req, res) => {
-    let {username, password, email} = req.body;
-    if (username == undefined || password == undefined || email == undefined) {
-        return res.json({
-            status: 400,
-            message: "Username & Password & Email cannot be empty."
-        });
+        if (bcrypt.compareSync(password, rows[0].password)) {
+            log(`${chalk.green(`[LOGIN]`)} Successful Login: ${chalk.green(`${user_id}`)}`);
+            return res.json({status: 200, message: "Login Successful"});
+        }
+    } catch (error) {
+        log(error.message);
+        return res.status(404).json({status: 404, code: error.code, message: error.message});
     }
 
-    if (username.indexOf(' ') > 0) {
-        return res.json({
-            status: 400,
-            message: "Username cannot has whitespace."
-        });
-    }
-
-    if (!validateEmail(email)) {
-        log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} Register failed for ${chalk.red(username)} with invalid email format.`);
-        return res.json({
-            status: 400,
-            message: "Invalid email format."
-        });
-    }
-
-    let encryptPassword = bcrypt.hashSync(password, 10);
+    return res.status(404).json({status: 404, message: "Username or Password is incorrect."});
     
-    await connection.execute("INSERT INTO users (username, password, email) VALUES (?, ?, ?)", [username, encryptPassword, email], function (err, result, fields) {
-        if (err instanceof Error) {
-            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err}`);
-            return res.json({
-                status: 400,
-                code: err.code,
-                message: err.message
-            });
-        } else {
-            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} Register Successfully for ${chalk.green(username)}`);
-            return res.json({
-                status: 200,
-                message: "Register Successfully"
-            });
-        }
-    });
 });
 
-app.post('/api/v1/enrollCourse', async (req, res) => {
-    let {username, course_id} = req.body;
-    let enroll_date = getDate().curDate;
-    if (username == undefined || course_id == undefined) {
-        return res.json({
-            status: 400,
-            message: "Username & Course ID cannot be empty."
-        });
-    }
-    await connection.execute("SELECT * FROM courses WHERE course_id = ? LIMIT 1", [course_id], function (err, result, fields) {
-        if (result.length == 0) {
-            return res.json({
-                status: 400,
-                message: "Cannot find this course id."
-            });
-        } else {
-            if (result[0].is_approve == 0) {
-                return res.json({
-                    status: 400,
-                    message: "Course is not approved yet."
-                });
-            }
-            connection.execute("SELECT username FROM users_course WHERE course_id = ?", [course_id], function (err, result, fields) {
-                if (result.length > 0) {
-                    return res.json({
-                        status: 400,
-                        message: "Already enrolled to this course."
-                    });
-                } else {
-                    connection.execute("INSERT INTO users_course (username, course_id, enroll_date) VALUES (?, ?, ?)", [username, course_id, enroll_date], function (err, result, fields) {
-                        if (err instanceof Error) {
-                            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
-                            return res.json({
-                                status: 400,
-                                code: err.code,
-                                message: err.message
-                            });
-                        } else {
-                            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} ${username} enrolled to ${course_id}`);
-                            return res.json({
-                                status: 200,
-                                message: "Enrolled Successfully"
-                            });
-                        }
-                    });
-                }
-            })
-        }
-    });
-});
+app.post('/auth/register', async (req, res) => {
+    const {user_id, password, email} = req.body;
 
-app.post('/api/v1/createCourse', async (req, res) => {
-    let {owner, course_name, course_desc, course_type} = req.body;
-    let course_id = await generateString(10);
-
-    if (owner == undefined || course_name == undefined || course_desc == undefined || course_type == undefined) {
-        return res.json({
-            status: 400,
-            message: "Owner & Course Name & Course Description & Course Type cannot be empty."
-        });
-    }
-    await connection.execute('INSERT INTO courses (owner, course_id, course_name, course_desc, course_type) VALUES (?, ?, ?, ?, ?)', [owner, course_id, course_name, course_desc, course_type], function (err, result, fields) {
-        if (err instanceof Error) {
-            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
-            return res.json({
-                status: 400,
-                code: err.code,
-                message: err.message
-            });
-        } else {
-            log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} ${owner} created ${course_id}`);
-            return res.json({
-                status: 200,
-                message: "Created Successfully"
-            });
-        }
-    });
-});
-
-app.put('/api/v1/approveCourse', async (req, res) => {
-    let {course_id, is_approve} = req.body;
-    if (course_id == undefined || is_approve == undefined) {
-        return res.json({
-            status: 400,
-            message: "Course ID & Approve Status cannot be empty."
-        });
+    if (!user_id || !password || !email) {
+        return res.status(404).json({status: 404, message: "Username / Password / Email must be submit to form."});
     }
 
-    let create_date = new Date();
-    let expired_date = new Date();
-    expired_date.setDate(expired_date.getDate() + 7);
+    try {
+        const passwordHash = await bcrypt.hash(password, 10);
+        const sql = 'INSERT INTO `users` (`user_id`, `password`, `email`) VALUES (?, ?, ?)';
+        const values = [user_id, passwordHash, email];
 
-    await connection.execute("SELECT course_id FROM courses WHERE course_id = ?", [course_id], function (err, result, fields) {
-        if (result.length == 0) {
-            return res.json({
-                status: 400,
-                message: "Cannot find this course id."
-            });
-        } else {
-            if (is_approve == 1) {
-                connection.execute("UPDATE courses SET is_approve = ?, create_date = ?, expired_date = ? WHERE course_id = ?", [is_approve, create_date, expired_date, course_id], function (err, result, fields) {
-                    if (err instanceof Error) {
-                        log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.red('[400]')} ${err.code}`);
-                        return res.json({
-                            status: 400,
-                            code: err.code,
-                            message: err.message
-                        });
-                    } else {
-                        log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} ${course_id} approved successfully.`);
-                        return res.json({
-                            status: 200,
-                            message: "Approved Successfully"
-                        });
-                    }
-                });
-            } else {
-                log(`[${getDate().date}/${getDate().month}/${getDate().year} ${getDate().hour}:${getDate().minute}:${getDate().second}] ${chalk.green('[200]')} ${course_id} remove successfully.`);
-                connection.execute("DELETE FROM courses WHERE course_id = ?", [course_id]);
-                return res.json({
-                    status: 200,
-                    message: "Remove Successfully"
-                });
-            }
-            
+        const [result, fields] = await db.execute(sql, values);
+        if (result.affectedRows == 1) {
+            log(`${chalk.green(`[REGISTER]`)} Successful - ${chalk.green(`${user_id}`)} with email ${chalk.green(`${email}`)}`);
+            return res.json({status: 200, message: "Register Successful"});
         }
-    })
+    } catch (error) {
+        log(error.message);
+        return res.status(404).json({status: 404, code: error.code, message: error.message});
+    }
 
-   
+    
+    return res.status(404).json({status: 404, message: "Username / Password / Email is incorrect."});
+
+
 });
