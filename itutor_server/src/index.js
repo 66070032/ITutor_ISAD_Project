@@ -103,7 +103,7 @@ app.get('/', async (req, res) => {
     return res.status(200).send("Server is running...");
 });
 
-app.post('/auth/login', async (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
     const {user_id, password} = req.body;
 
     if (!user_id || !password) {
@@ -136,7 +136,7 @@ app.post('/auth/login', async (req, res) => {
     
 });
 
-app.post('/auth/register', async (req, res) => {
+app.post('/api/auth/register', async (req, res) => {
     const {user_id, password, email} = req.body;
 
     if (!user_id || !password || !email) {
@@ -161,5 +161,16 @@ app.post('/auth/register', async (req, res) => {
     
     return res.status(404).json({status: 404, message: "Username / Password / Email is incorrect."});
 
+});
+
+app.post('/api/topic/allTopic', async (req, res) => {
+
+    try {
+        const sql = 'SELECT * FROM courses';
+        const [result, fields] = await db.execute(sql);
+        return res.json({status: 200, data: JSON.stringify(result)});
+    } catch (error) {
+        
+    }
 
 });
