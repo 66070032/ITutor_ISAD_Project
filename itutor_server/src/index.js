@@ -163,12 +163,12 @@ app.post('/api/auth/register', async (req, res) => {
 
 });
 
-app.post('/api/topic/allTopic', async (req, res) => {
+app.get('/api/topic/allTopic', async (req, res) => {
 
     try {
         const sql = 'SELECT * FROM courses';
         const [result, fields] = await db.execute(sql);
-        return res.json({status: 200, data: JSON.stringify(result)});
+        return res.json({status: 200, data: result});
     } catch (error) {
         
     }
