@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const chalk = require('chalk');
 const mysql = require('mysql2/promise');
 const morgan = require('morgan');
+const cors = require('cors');
 
 let api_port = 3100;
 let log = (msg) => {
@@ -70,6 +71,16 @@ async function getConnection() {
     }
 }
 
+class Users {
+    constructor (username, email, phone, firstname, lastname) {
+        this.username = username;
+        this.email = email;
+        this.phone = phone;
+        this.firstname = firstname;
+        this.lastname = lastname;
+    }
+}
+
 app.listen(api_port, async () => {
     await delay(500);
     console.clear();
@@ -87,9 +98,15 @@ app.listen(api_port, async () => {
 });
 
 app.use(express.json());
-app.use(morgan('dev')); // You can use 'tiny', 'combined', 'dev', or define your own format.
+app.use(cors());
+// app.use(morgan('dev')); // You can use 'tiny', 'combined', 'dev', or define your own format.
 
-app.get('/auth/login', async (req, res) => {
+app.get('/auth/login_1', async (req, res) => {
+    let ff = await db.execute('SELECT * FROM users');
+    return res.status(200).send('tes');
+})
+
+app.post('/auth/login', async (req, res) => {
     const {user_id, password} = req.body;
 
     if (!user_id || !password) {
@@ -139,7 +156,7 @@ app.post('/auth/register', async (req, res) => {
             return res.json({status: 200, message: "Register Successful"});
         }
     } catch (error) {
-        log(error.message);
+        log(`${chalk.red(`[REGISTER]`)} Failed - ${error.message}`);
         return res.status(404).json({status: 404, code: error.code, message: error.message});
     }
 

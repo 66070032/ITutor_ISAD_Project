@@ -1,6 +1,18 @@
+'use client';
 import React from 'react';
 
 export default function SignIn() {
+  const getData = async (username, password) => {
+    await fetch("http://localhost:3100/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: username, password: password }),
+    }).then(response => response.json())
+      .then(data => alert(data.message))
+      .catch(error => console.error("Error:", error));
+  }
   return (
     <div className="bg-white h-screen flex items-center justify-center">
       <div className="w-full max-w-xs text-center">
@@ -54,7 +66,7 @@ export default function SignIn() {
           <div className="flex justify-center">
             <button
               className="bg-red-500 hover:bg-red-600 text-white font-bold h-9 w-96 rounded focus:outline-none focus:shadow-outline"
-              type="button"
+              type="button" onClick={() => getData(document.getElementById('username').value, document.getElementById('password').value)}
             >
               Sign In
             </button>
