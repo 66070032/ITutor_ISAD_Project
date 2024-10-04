@@ -4,7 +4,6 @@ const app = new express();
 const bcrypt = require('bcrypt');
 const chalk = require('chalk');
 const mysql = require('mysql2/promise');
-const morgan = require('morgan');
 const cors = require('cors');
 
 let api_port = 3100;
@@ -65,7 +64,7 @@ async function getConnection() {
             password: 'v(2@jwAjq1uK7PCp',
             database: 'itutor',
         });
-        log(`Database established successfully`);
+        log(`Database: ${chalk.bgGreen.whiteBright(` Connected `)}`);
     } catch (error) {
         log(error);
     }
@@ -93,13 +92,12 @@ app.listen(api_port, async () => {
  |  |   |  |  |     |  |  |  |     ||  .  \\    |  |  ||  |  |  | 
 |____|  |__|   \\__,_|  |__|   \\___/ |__|\\_|    |__|__||__| |____|
         `)
-    log(`Server started on port ${chalk.bgBlue.whiteBright(` ${api_port} `)}`);
+    log(`Server port: ${chalk.bgBlue.whiteBright(` ${api_port} `)}`);
     getConnection();
 });
 
 app.use(express.json());
 app.use(cors());
-// app.use(morgan('dev')); // You can use 'tiny', 'combined', 'dev', or define your own format.
 
 app.get('/', async (req, res) => {
     return res.status(200).send("Server is running...");
