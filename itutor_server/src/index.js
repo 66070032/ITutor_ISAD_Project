@@ -187,6 +187,7 @@ app.post('/api/course/enrollCourse', async (req, res) => {
         const values = [user_id, course_id];
         const [result, fields] = await db.execute(sql, values);
         if (result.affectedRows == 1) {
+            log(`${chalk.green(`[ENROLL]`)} Successful - ${chalk.green(`${user_id}`)} with course ${chalk.green(`${course_id}`)}`);
             return res.json({status: 200, message: "Enroll Successful"});
         }
     } catch (error) {
