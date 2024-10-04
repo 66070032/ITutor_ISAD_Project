@@ -3,7 +3,7 @@ import React from 'react';
 
 export default function SignIn() {
   const getData = async (username, password) => {
-    await fetch("http://localhost:3100/auth/login", {
+    await fetch("http://itutor.jokeped.net:3100/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

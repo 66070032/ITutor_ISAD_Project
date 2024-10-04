@@ -101,10 +101,9 @@ app.use(express.json());
 app.use(cors());
 // app.use(morgan('dev')); // You can use 'tiny', 'combined', 'dev', or define your own format.
 
-app.get('/auth/login_1', async (req, res) => {
-    let ff = await db.execute('SELECT * FROM users');
-    return res.status(200).send('tes');
-})
+app.get('/', async (req, res) => {
+    return res.status(200).send("Server is running...");
+});
 
 app.post('/auth/login', async (req, res) => {
     const {user_id, password} = req.body;
@@ -126,6 +125,7 @@ app.post('/auth/login', async (req, res) => {
 
         if (bcrypt.compareSync(password, rows[0].password)) {
             log(`${chalk.green(`[LOGIN]`)} Successful Login: ${chalk.green(`${user_id}`)}`);
+            new Users(rows[0].user_id, rows[0].email, rows[0].phone, rows[0].firstname, rows[0].lastname);
             return res.json({status: 200, message: "Login Successful"});
         }
     } catch (error) {
