@@ -163,14 +163,35 @@ app.post('/api/auth/register', async (req, res) => {
 
 });
 
-app.get('/api/topic/allTopic', async (req, res) => {
+app.get('/api/course/allCourse', async (req, res) => {
 
     try {
         const sql = 'SELECT * FROM courses';
         const [result, fields] = await db.execute(sql);
         return res.json({status: 200, data: result});
     } catch (error) {
-        
+        return res.status(404).json({status: 404, code: error.code, message: error.message});
     }
 
+});
+
+app.post('/api/course/enrollCourse', async (req, res) => {
+    const {user_id, course_id} = req.body;
+
+    if (!user_id || !course_id) {
+        return res.status(404).json({status: 404, message: "User ID / Course ID must be submit to form."});
+    }
+
+    try {
+        const sql = 'INSERT INTO `user_course` (`user_id`, `course_id`) VALUES (?, ?)';
+        const values = [user_id, course_id];
+        const [result, fields] = await db.execute(sql, values);
+        if (result.affectedRows == 1) {
+            return res.json({status: 200, message: "Enroll Successful"});
+        }
+    } catch (error) {
+        return res.status(404).json({status: 404, code: error.code, message: error.message});
+    }
+
+    return res.status(404).json({status: 404, message: "Enroll Failed"});
 });
