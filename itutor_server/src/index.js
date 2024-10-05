@@ -183,10 +183,20 @@ app.post('/api/course/enrollCourse', async (req, res) => {
     }
 
     try {
-        const sql = 'INSERT INTO `user_course` (`user_id`, `course_id`) VALUES (?, ?)';
-        const values = [user_id, course_id];
-        const [result, fields] = await db.execute(sql, values);
-        if (result.affectedRows == 1) {
+        const checkCourse = 'SELECT * FROM courses WHERE course_id = ?';
+        const checkValues = [course_id];
+
+        const [checkResult, checkFields] = await db.execute(checkCourse, checkValues);
+
+        if (checkResult.length == 0) {
+            return res.status(404).json({status: 404, message: "Course ID is incorrect."});
+        }
+
+        const enrollCourse = 'INSERT INTO `user_course` (`user_id`, `course_id`) VALUES (?, ?)';
+        const enrollValues = [user_id, course_id];
+
+        const [enrollResult, enrollFields] = await db.execute(enrollCourse, enrollValues);
+        if (enrollResult.affectedRows == 1) {
             log(`${chalk.green(`[ENROLL]`)} Successful - ${chalk.green(`${user_id}`)} with course ${chalk.green(`${course_id}`)}`);
             return res.json({status: 200, message: "Enroll Successful"});
         }
