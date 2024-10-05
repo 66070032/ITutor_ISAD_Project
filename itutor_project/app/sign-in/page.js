@@ -44,7 +44,7 @@ export default function SignIn() {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="username"
               type="text"
-              placeholder="6X070XXX@kmitl.ac.th"
+              placeholder=""
             />
           </div>
 
@@ -56,7 +56,7 @@ export default function SignIn() {
               className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
               id="password"
               type="password"
-              placeholder="Password"
+              placeholder=""
             />
             <p className="text-right text-blue-500 text-sm hover:underline cursor-pointer">
               Forgot Password?
