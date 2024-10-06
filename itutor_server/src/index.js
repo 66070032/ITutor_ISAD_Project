@@ -137,20 +137,20 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.post('/api/auth/register', async (req, res) => {
-    const {user_id, password, email} = req.body;
+    const {user_id, password} = req.body;
 
-    if (!user_id || !password || !email) {
-        return res.status(404).json({status: 404, message: "Username / Password / Email must be submit to form."});
+    if (!user_id || !password) {
+        return res.status(404).json({status: 404, message: "Username or Password must be submit to form."});
     }
 
     try {
         const passwordHash = await bcrypt.hash(password, 10);
-        const sql = 'INSERT INTO `users` (`user_id`, `password`, `email`) VALUES (?, ?, ?)';
-        const values = [user_id, passwordHash, email];
+        const sql = 'INSERT INTO `users` (`user_id`, `password`) VALUES (?, ?)';
+        const values = [user_id, passwordHash];
 
         const [result, fields] = await db.execute(sql, values);
         if (result.affectedRows == 1) {
-            log(`${chalk.green(`[REGISTER]`)} Successful - ${chalk.green(`${user_id}`)} with email ${chalk.green(`${email}`)}`);
+            log(`${chalk.green(`[REGISTER]`)} Successful - ${chalk.green(`${user_id}`)}`);
             return res.json({status: 200, message: "Register Successful"});
         }
     } catch (error) {

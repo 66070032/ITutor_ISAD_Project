@@ -1,6 +1,19 @@
+'use client';
 import React from 'react';
 
 export default function SignUp() {
+  const signupAPI = async (username, password) => {
+    console.log('test')
+    await fetch("http://itutor.jokeped.net:3100/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: username, password: password }),
+    }).then(response => response.json())
+      .then(data => alert(data.message))
+      .catch(error => console.error("Error:", error));
+  }
   return (
     <div className="bg-cyan-600 h-screen flex items-center justify-center relative">
 
@@ -74,7 +87,7 @@ export default function SignUp() {
             <div className="flex justify-center">
               <button
                 className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
-                type="button"
+                type="button" onClick={() => signupAPI(document.getElementById('email').value, document.getElementById('password').value)}
               >
                 Sign up
               </button>
