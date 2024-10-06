@@ -3,8 +3,7 @@ import React from 'react';
 
 export default function SignUp() {
   const signupAPI = async (username, password) => {
-    console.log('test')
-    await fetch("http://itutor.jokeped.net:3100/api/auth/register", {
+    await fetch("http://localhost:3100/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
