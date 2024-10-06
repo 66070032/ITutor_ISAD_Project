@@ -1,4 +1,5 @@
 'use client';
+import Link from "next/link";
 import React from 'react';
 
 export default function SignUp() {
@@ -36,9 +37,9 @@ export default function SignUp() {
         {/* Sign-in Link */}
         <div className="text-white m-8">
           Already have an account?{' '}
-          <a href="#" className="text-blue-200 underline hover:text-white">
+          <Link href="/sign-in" className="text-blue-200 underline hover:text-white">
             Sign in
-          </a>
+          </Link>
         </div>
       </div>
 

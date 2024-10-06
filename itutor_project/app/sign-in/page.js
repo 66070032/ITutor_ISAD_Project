@@ -1,5 +1,7 @@
 'use client';
+import Link from "next/link";
 import React from 'react';
+
 
 export default function SignIn() {
   const getData = async (username, password) => {
@@ -64,12 +66,13 @@ export default function SignIn() {
           </div>
 
           <div className="flex justify-center">
-            <button
-              className="bg-red-500 hover:bg-red-600 text-white font-bold h-9 w-96 rounded focus:outline-none focus:shadow-outline"
+              <button className="bg-red-500 hover:bg-red-600 text-white font-bold h-9 w-96 rounded focus:outline-none focus:shadow-outline"
               type="button" onClick={() => getData(document.getElementById('username').value, document.getElementById('password').value)}
-            >
-              Sign In
-            </button>
+              >
+                <Link href="sign-up/">
+                Sign In</Link>
+              
+             </button>
           </div>
         </form>
 
