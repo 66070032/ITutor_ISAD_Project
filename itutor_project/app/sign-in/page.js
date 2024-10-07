@@ -1,5 +1,4 @@
 'use client';
-import Link from "next/link";
 import React from 'react';
 
 
@@ -75,16 +74,14 @@ export default function SignIn() {
               <button className="bg-red-500 hover:bg-red-600 text-white font-bold h-9 w-96 rounded focus:outline-none focus:shadow-outline"
               type="button" onClick={() => getData(document.getElementById('username').value, document.getElementById('password').value)}
               >
-                <Link href="sign-up/">
-                Sign In</Link>
-              
-             </button>
+                Sign In
+              </button>
           </div>
         </form>
 
         {/* Link to Create New Account */}
         <p className="text-center text-gray-500 text-sm">
-          New to ITutor? <a href="#" className="text-blue-500 hover:underline">Create an Account</a>
+          New to ITutor? <a href="/sign-up" className="text-blue-500 hover:underline">Create an Account</a>
         </p>
       </div>
     </div>
