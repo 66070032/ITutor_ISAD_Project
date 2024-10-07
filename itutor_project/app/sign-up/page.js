@@ -4,15 +4,21 @@ import React from 'react';
 
 export default function SignUp() {
   const signupAPI = async (username, password) => {
-    await fetch("http://localhost:3100/api/auth/register", {
+    const response = await fetch("http://localhost:3100/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ user_id: username, password: password }),
-    }).then(response => response.json())
-      .then(data => alert(data.message))
-      .catch(error => console.error("Error:", error));
+    });
+    const result = await response.json();
+    if (result == 200) {
+      // Success Functions
+      alert(result.message);
+    } else {
+      // Failed Functions
+      alert(result.message);
+    }
   }
   return (
     <div className="bg-cyan-600 h-screen flex items-center justify-center relative">
