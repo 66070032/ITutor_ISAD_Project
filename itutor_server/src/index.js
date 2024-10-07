@@ -206,3 +206,28 @@ app.post('/api/course/enrollCourse', async (req, res) => {
 
     return res.status(404).json({status: 404, message: "Enroll Failed"});
 });
+
+app.post('/api/course/createCourse', async (req, res) => {
+    const {owner_id, course_name, course_desc, course_pax, course_max_pax, course_expire} = req.body;
+
+    if (!owner_id || !course_name || !course_desc || !course_max_pax || !course_expire) {
+        return res.status(404).json({status: 404, message: "Owner ID / Course Name / Course Description / Course Max Pax / Course Expired must be submit to form."});
+    }
+
+    try {
+        const course_id = generateString(10);
+        const sql = 'INSERT INTO `courses` (`course_id`, `owner_id`, `course_name`, `course_desc`, `course_max_pax`, `course_expire`) VALUES (?, ?, ?, ?, ?, ?)';
+        const values = [course_id, owner_id, course_name, course_desc, course_max_pax, course_expire];
+
+        const [result, fields] = await db.execute(sql, values);
+        if (result.affectedRows == 1) {
+            log(`${chalk.green(`[CREATE COURSE]`)} Successful - ${chalk.green(`${course_id}`)}`);
+            return res.json({status: 200, message: "Create Course Successful"});
+        }
+    } catch (error) {
+        return res.status(404).json({status: 404, code: error.code, message: error.message});
+    }
+
+    return res.status(404).json({status: 404, message: "Create Course Failed"});
+
+})
