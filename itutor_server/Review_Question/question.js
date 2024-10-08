@@ -1,44 +1,47 @@
 class Question {
+    // Private attributes
+    #id;
+    #questionText;
+    #options;
+
     constructor(id, questionText, options) {
-        setId(id); //positive number
-        setQuestionText(questionText); //1-255
-        setOptions(options); //array
+        this.#id = id; // positive number
+        this.#questionText = questionText; // 1-255
+        this.#options = options; // array
     }
 
-        // Getter methods
+    // Getter methods
     get id() {
-        return this.id;
+        return this.#id;
     }
 
     get questionText() {
-        return this.questionText;
+        return this.#questionText;
     }
 
     get options() {
-        return this.options;
+        return this.#options;
     }
 
     // Setter methods
     setId(newId) {
         if (typeof newId !== 'number' || newId <= 0) {
-        throw new Error('id must be a positive number.');
+            throw new Error('id must be a positive number.');
         }
-        this.id = newId;
+        this.#id = newId;
     }
 
     setQuestionText(newQuestionText) {
-        // ตรวจสอบความยาวของคำถาม (ถ้าจำเป็น)
         if (newQuestionText.length > 255) {
             throw new Error('Question text is too long.');
         }
-        this.questionText = newQuestionText;
+        this.#questionText = newQuestionText;
     }
 
     setOptions(newOptions) {
-        // ตรวจสอบว่า newOptions เป็น array หรือไม่
         if (!Array.isArray(newOptions)) {
             throw new Error('Options must be an array.');
         }
-        this.options = newOptions;
+        this.#options = newOptions;
     }
 }

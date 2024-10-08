@@ -1,78 +1,86 @@
 class Topic {
+    // Private attributes
+    #id;
+    #name;
+    #description;
+    #meetingPlace;
+    #dateTime;
+    #maxParticipants;
+
     constructor(id, name, description, meetingPlace, dateTime, maxParticipants) {
-        setId(id); //positive number
-        setName(name); //string
-        setDescription(description); //string
-        setMeetingPlace(meetingPlace); //string
-        setDateTime(dateTime); //date
-        setMaxParticipants(maxParticipants); //positive number
+        this.#id = id; //positive number
+        this.#name = name; //string
+        this.#description = description; //string
+        this.#meetingPlace = meetingPlace; //string
+        this.#dateTime = dateTime; //date
+        this.#maxParticipants = maxParticipants; //positive number
     }
 
-    // Getter methods (using arrow functions for conciseness)
+    // Getter methods
     get id() {
-        return this.id;
+        return this.#id;
     }
 
     get name() {
-        return this.name;
+        return this.#name;
     }
 
     get description() {
-        return this.description;
+        return this.#description;
     }
 
     get meetingPlace() {
-        return this.meetingPlace;
+        return this.#meetingPlace;
     }
 
     get dateTime() {
-        return this.dateTime;
+        return this.#dateTime;
     }
 
     get maxParticipants() {
-        return this.maxParticipants;
+        return this.#maxParticipants;
     }
 
-    // Setter methods (using traditional functions for clarity)
+    // Setter methods
     setId(newId) {
         if (typeof newId !== 'number' || newId <= 0) {
-        throw new Error('id must be a positive number.');
+            throw new Error('id must be a positive number.');
         }
-        this.id = newId;
+        this.#id = newId;
     }
 
     setName(newName) {
         if (typeof newName !== 'string') {
-        throw new TypeError('Topic name must be a string.');
+            throw new TypeError('Topic name must be a string.');
         }
-        this.name = newName;
+        this.#name = newName;
     }
 
     setDescription(newDescription) {
         if (typeof newDescription !== 'string') {
-        throw new TypeError('Topic description must be a string.');
+            throw new TypeError('Topic description must be a string.');
         }
-        this.description = newDescription;
+        this.#description = newDescription;
     }
 
     setMeetingPlace(newMeetingPlace) {
-        if (typeof newMeetingPlace !== 'string') {  // Ensure meetingPlace is a string
-        throw new TypeError('Topic meeting place must be a string.');
+        if (typeof newMeetingPlace !== 'string') {
+            throw new TypeError('Topic meeting place must be a string.');
         }
-        this.meetingPlace = newMeetingPlace;
+        this.#meetingPlace = newMeetingPlace;
     }
 
     setDateTime(newDateTime) {
         if (!(newDateTime instanceof Date)) {
-        throw new TypeError('Topic dateTime must be a Date object.');
+            throw new TypeError('Topic dateTime must be a Date object.');
         }
-        this.dateTime = newDateTime;
+        this.#dateTime = newDateTime;
     }
 
     setMaxParticipants(newMaxParticipants) {
         if (typeof newMaxParticipants !== 'number' || newMaxParticipants <= 0) {
-        throw new TypeError('Topic maxParticipants must be a positive number.');
+            throw new TypeError('Topic maxParticipants must be a positive number.');
         }
-        this.maxParticipants = newMaxParticipants;
+        this.#maxParticipants = newMaxParticipants;
     }
 }
