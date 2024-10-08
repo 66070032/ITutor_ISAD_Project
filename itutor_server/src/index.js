@@ -207,6 +207,27 @@ app.post('/api/course/enrollCourse', async (req, res) => {
     return res.status(404).json({status: 404, message: "Enroll Failed"});
 });
 
+app.post('/api/course/getCourse', async (req, res) => {
+    const {course_id} = req.body;
+
+    if (!course_id) {
+        return res.status(404).json({status: 404, message: "Course ID must be submit to form."});
+    }
+
+    try {
+        const sql = 'SELECT * FROM courses WHERE course_id = ?';
+        const values = [course_id];
+
+        const [result, fields] = await db.execute(sql, values);
+        if (result.length == 0) {
+            return res.status(404).json({status: 404, message: "Course ID is incorrect."});
+        }
+        return res.json({status: 200, data: result});
+    } catch (error) {
+        return res.status(404).json({status: 404, code: error.code, message: error.message});
+    }
+});
+
 app.post('/api/course/createCourse', async (req, res) => {
     const {owner_id, course_name, course_desc, course_pax, course_max_pax, course_expire} = req.body;
 
@@ -215,8 +236,9 @@ app.post('/api/course/createCourse', async (req, res) => {
     }
 
     try {
-        const sql = 'INSERT INTO `courses` (`owner_id`, `course_name`, `course_desc`, `course_max_pax`, `course_expire`) VALUES (?, ?, ?, ?, ?)';
-        const values = [owner_id, course_name, course_desc, course_max_pax, course_expire];
+        const course_create = `${getDate().year}-${getDate().month}-${getDate().date} ${getDate().hour}:${getDate().minute}:${getDate().second}`;
+        const sql = 'INSERT INTO `courses` (`owner_id`, `course_name`, `course_desc`, `course_max_pax`, `course_create`, `course_expire`) VALUES (?, ?, ?, ?, ?, ?)';
+        const values = [owner_id, course_name, course_desc, course_max_pax, course_create, course_expire];
 
         const [result, fields] = await db.execute(sql, values);
         if (result.affectedRows == 1) {
