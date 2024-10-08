@@ -215,13 +215,12 @@ app.post('/api/course/createCourse', async (req, res) => {
     }
 
     try {
-        const course_id = generateString(10);
-        const sql = 'INSERT INTO `courses` (`course_id`, `owner_id`, `course_name`, `course_desc`, `course_max_pax`, `course_expire`) VALUES (?, ?, ?, ?, ?, ?)';
-        const values = [course_id, owner_id, course_name, course_desc, course_max_pax, course_expire];
+        const sql = 'INSERT INTO `courses` (`owner_id`, `course_name`, `course_desc`, `course_max_pax`, `course_expire`) VALUES (?, ?, ?, ?, ?)';
+        const values = [owner_id, course_name, course_desc, course_max_pax, course_expire];
 
         const [result, fields] = await db.execute(sql, values);
         if (result.affectedRows == 1) {
-            log(`${chalk.green(`[CREATE COURSE]`)} Successful - ${chalk.green(`${course_id}`)}`);
+            log(`${chalk.green(`[CREATE COURSE]`)} Successful - [${chalk.green(`${course_name}`)}, ${chalk.green(`${owner_id}`)}]`);
             return res.json({status: 200, message: "Create Course Successful"});
         }
     } catch (error) {
