@@ -1,9 +1,9 @@
 class User {
     constructor(id, username, email, profilePicture) {
-        setid(id);
-        setusername(username);
-        setemail(email);
-        setprofilePicture(profilePicture);
+        setId(id); //positive number
+        setUsername(username); //string
+        setEmail(email); //email format
+        setProfilePicture(profilePicture); //url
     }
 
     // Getter methods
@@ -24,7 +24,7 @@ class User {
     }
 
     // Setter methods
-    setid(newId) {
+    setId(newId) {
         // เพิ่มการตรวจสอบค่า เช่น ตรวจสอบความยาวของ username
         if (typeof newId !== 'number' || newId <= 0) {
         throw new Error('id must be a positive number.');
@@ -32,7 +32,7 @@ class User {
         this.id = newId;
     }
 
-    setusername(newUsername) {
+    setUsername(newUsername) {
         // เพิ่มการตรวจสอบค่า เช่น ตรวจสอบความยาวของ username
         if (typeof newUsername !== 'string' || newUsername.length < 3) {
         throw new Error('Username must be a string and at least 3 characters long.');
@@ -40,7 +40,7 @@ class User {
         this.username = newUsername;
     }
 
-    setemail(newEmail) {
+    setEmail(newEmail) {
         // ตรวจสอบรูปแบบของ email
         if (!/^\S+@\S+\.\S+$/.test(newEmail)) {
           throw new Error('Invalid email format.');
@@ -48,7 +48,7 @@ class User {
         this.email = newEmail;
     }
 
-    setprofilePicture(newProfilePicture) {
+    setProfilePicture(newProfilePicture) {
         // ตรวจสอบว่าเป็น URL หรือไม่
         if (!/^(http:\/\/|https:\/\/)/.test(newProfilePicture)) {
           throw new Error('Profile picture must be a URL.');

@@ -1,7 +1,44 @@
 class Question {
     constructor(id, questionText, options) {
-        this.id = id;
-        this.questionText = questionText;
-        this.options = options;
+        setId(id); //positive number
+        setQuestionText(questionText); //1-255
+        setOptions(options); //array
+    }
+
+        // Getter methods
+    get id() {
+        return this.id;
+    }
+
+    get questionText() {
+        return this.questionText;
+    }
+
+    get options() {
+        return this.options;
+    }
+
+    // Setter methods
+    setId(newId) {
+        if (typeof newId !== 'number' || newId <= 0) {
+        throw new Error('id must be a positive number.');
+        }
+        this.id = newId;
+    }
+
+    setQuestionText(newQuestionText) {
+        // ตรวจสอบความยาวของคำถาม (ถ้าจำเป็น)
+        if (newQuestionText.length > 255) {
+            throw new Error('Question text is too long.');
+        }
+        this.questionText = newQuestionText;
+    }
+
+    setOptions(newOptions) {
+        // ตรวจสอบว่า newOptions เป็น array หรือไม่
+        if (!Array.isArray(newOptions)) {
+            throw new Error('Options must be an array.');
+        }
+        this.options = newOptions;
     }
 }
