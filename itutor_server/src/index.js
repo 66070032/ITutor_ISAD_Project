@@ -100,6 +100,11 @@ class Std {
         const createUser = await new StdDatabase().createUser(user_id, encryptPass, email, phone, role, firstname, lastname, status);
         return createUser;
     }
+
+    async viewTopic(course_id) {
+        const topic = await new TpcDatabase().pullTopic(course_id);
+        return topic;
+    }
 }
 
 class encryptPassword {
@@ -146,6 +151,23 @@ class StdDatabase {
     }
 }
 
+class TpcDatabase {
+    async pullTopic(course_id) {
+        try {
+            const sql = 'SELECT * FROM courses WHERE course_id = ?';
+            const values = [course_id];
+            const [rows, fields] = await db.execute(sql, values);
+            if (rows.length == 0) {
+                return {status: 400, message: "Course ID is incorrect."};
+            }
+            return {status: 200, data: rows};
+        } catch (error) {
+            return {status: 400, code: error.code, message: error.message};
+        }
+        return {status: 400, message: "Failed to load topic."};
+    }
+}
+
 app.listen(api_port, async () => {
     await delay(500);
     console.clear();
@@ -169,11 +191,11 @@ app.get('/', async (req, res) => {
     return res.status(200).send("Server is running...");
 });
 
-app.post('/test', async (req, res) => {
-    const {user_id, password, email, phone, role, firstname, lastname, status} = req.body;
-    const createUser = await new Std().regisUser(user_id, password, email, phone, role, firstname, lastname, status);
-    return res.json(createUser);
-})
+/* app.post('/test', async (req, res) => {
+    const {course_id} = req.body;
+    const topic = await new Std().viewTopic(course_id);
+    return res.json(topic);
+}) */
 
 app.post('/api/auth/login', async (req, res) => {
     const {user_id, password} = req.body;
@@ -186,6 +208,12 @@ app.post('/api/auth/register', async (req, res) => {
     const createUser = await new Std().regisUser(user_id, password, email, phone, role, firstname, lastname, status);
     return res.json(createUser);
 })
+
+app.post('/api/course/getCourse', async (req, res) => {
+    const {course_id} = req.body;
+    const topic = await new Std().viewTopic(course_id);
+    return res.json(topic);
+});
 
 app.get('/api/course/allCourse', async (req, res) => {
 
@@ -229,27 +257,6 @@ app.post('/api/course/enrollCourse', async (req, res) => {
     }
 
     return res.status(404).json({status: 404, message: "Enroll Failed"});
-});
-
-app.post('/api/course/getCourse', async (req, res) => {
-    const {course_id} = req.body;
-
-    if (!course_id) {
-        return res.status(404).json({status: 404, message: "Course ID must be submit to form."});
-    }
-
-    try {
-        const sql = 'SELECT * FROM courses WHERE course_id = ?';
-        const values = [course_id];
-
-        const [result, fields] = await db.execute(sql, values);
-        if (result.length == 0) {
-            return res.status(404).json({status: 404, message: "Course ID is incorrect."});
-        }
-        return res.json({status: 200, data: result});
-    } catch (error) {
-        return res.status(404).json({status: 404, code: error.code, message: error.message});
-    }
 });
 
 app.post('/api/course/createCourse', async (req, res) => {
