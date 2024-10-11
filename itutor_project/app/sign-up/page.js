@@ -12,9 +12,10 @@ export default function SignUp() {
       body: JSON.stringify({ user_id: username, password: password }),
     });
     const result = await response.json();
-    if (result == 200) {
+    if (result.status == 200) {
       // Success Functions
-      alert(result.message);
+      window.location.href = "../";
+      // alert(result.message);
     } else {
       // Failed Functions
       alert(result.message);
