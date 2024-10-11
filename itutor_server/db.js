@@ -1,4 +1,6 @@
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
+const log = console.log;
+const chalk = require('chalk');
 
 let db;
 async function getConnection() {
@@ -12,7 +14,6 @@ async function getConnection() {
         log(`Database: ${chalk.bgGreen.whiteBright(` Connected `)}`);
     } catch (error) {
         log(error);
-        getConnection();
     }
 }
 

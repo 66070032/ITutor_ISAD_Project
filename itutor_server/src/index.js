@@ -70,13 +70,79 @@ async function getConnection() {
     }
 }
 
-class Users {
-    constructor (username, email, phone, firstname, lastname) {
-        this.username = username;
+class Std {
+    constructor(user_id, password, email, phone, role, firstname, lastname, status) {
+      this.user_id = user_id;
+      this.password = password || null;
+      this.email = email || null;
+      this.phone = phone || null;
+      this.role = role || "student";
+      this.firstname = firstname || null;
+      this.lastname = lastname || null;
+      this.status = status || 1;
+    }
+  
+    async checkUser(user_id, password) {
+        const check = await new StdDatabase().loginUser(user_id, password);
+        return check;
+    }
+
+    async regisUser(user_id, password = null, email = null, phone = null, role = "student", firstname = null, lastname = null, status = 1) {
+        this.user_id = user_id;
+        this.password = password;
         this.email = email;
-        this.phone = phone;
+        this.phone = null || phone;
+        this.role = role || "student";
         this.firstname = firstname;
         this.lastname = lastname;
+        this.status = status;
+        const encryptPass = await new encryptPassword().encrypt(password);
+        const createUser = await new StdDatabase().createUser(user_id, encryptPass, email, phone, role, firstname, lastname, status);
+        return createUser;
+    }
+}
+
+class encryptPassword {
+    async encrypt(password) {
+        return await bcrypt.hash(password, 10);
+    }
+
+    async compare(rawPass, hashPass) {
+        return await bcrypt.compare(rawPass, hashPass);
+    }
+}
+
+class StdDatabase {
+
+    async loginUser(user_id, password) {
+        try {
+            const sql = 'SELECT * FROM users WHERE user_id = ?';
+            const values = [user_id];
+            const [rows, fields] = await db.execute(sql, values);
+            if (rows.length == 0) {
+                return {status: 400, message: "Username or Password is incorrect."};
+            }
+            if (await bcrypt.compare(password, rows[0].password)) {
+                return {status: 200, message: "Login Successful"};
+            }
+            return {status: 400, message: "Login failed"};
+        } catch (error) {
+            return {status: 400, code: error.code, message: error.message};
+        }
+    }
+
+    async createUser(user_id, password, email, phone, role, firstname, lastname, status) {
+        try {
+            const sql = 'INSERT INTO users (user_id, password, email, phone, role, firstname, lastname, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+            const values = [user_id, password, email, phone, role, firstname, lastname, status];
+            const [rows, fields] = await db.execute(sql, values);
+            if (rows.affectedRows > 0) {
+                return {status: 200, message: "User created successfully"};
+            }
+            return {status: 400, message: "User creation failed"};
+        } catch (error) {
+            return {status: 400, code: error.code, message: error.message};
+        }
     }
 }
 
@@ -103,65 +169,23 @@ app.get('/', async (req, res) => {
     return res.status(200).send("Server is running...");
 });
 
+app.post('/test', async (req, res) => {
+    const {user_id, password, email, phone, role, firstname, lastname, status} = req.body;
+    const createUser = await new Std().regisUser(user_id, password, email, phone, role, firstname, lastname, status);
+    return res.json(createUser);
+})
+
 app.post('/api/auth/login', async (req, res) => {
     const {user_id, password} = req.body;
-
-    if (!user_id || !password) {
-        return res.status(404).json({status: 404, message: "Username or Password must be submit to form."});
-    }
-
-    try {
-        const sql = `SELECT * FROM users WHERE user_id = ?`;
-        const values = [user_id];
-
-        const [rows, fields] = await db.execute(sql, values);
-
-        if (rows.length == 0) {
-            log(`${chalk.red(`[LOGIN]`)} Failed Login: ${chalk.red(`${user_id}`)}`);
-            return res.status(404).json({status: 404, message: "Username or Password is incorrect."});
-        }
-
-        if (bcrypt.compareSync(password, rows[0].password)) {
-            log(`${chalk.green(`[LOGIN]`)} Successful Login: ${chalk.green(`${user_id}`)}`);
-            new Users(rows[0].user_id, rows[0].email, rows[0].phone, rows[0].firstname, rows[0].lastname);
-            return res.json({status: 200, message: "Login Successful"});
-        }
-    } catch (error) {
-        log(error.message);
-        return res.status(404).json({status: 404, code: error.code, message: error.message});
-    }
-
-    log(`${chalk.red(`[LOGIN]`)} Failed Login: ${chalk.red(`${user_id}`)}`);
-    return res.status(404).json({status: 404, message: "Username or Password is incorrect."});
-    
-});
+    const checkUser = await new Std().checkUser(user_id, password);
+    return res.json(checkUser);
+})
 
 app.post('/api/auth/register', async (req, res) => {
-    const {user_id, password} = req.body;
-
-    if (!user_id || !password) {
-        return res.status(404).json({status: 404, message: "Username or Password must be submit to form."});
-    }
-
-    try {
-        const passwordHash = await bcrypt.hash(password, 10);
-        const sql = 'INSERT INTO `users` (`user_id`, `password`) VALUES (?, ?)';
-        const values = [user_id, passwordHash];
-
-        const [result, fields] = await db.execute(sql, values);
-        if (result.affectedRows == 1) {
-            log(`${chalk.green(`[REGISTER]`)} Successful - ${chalk.green(`${user_id}`)}`);
-            return res.json({status: 200, message: "Register Successful"});
-        }
-    } catch (error) {
-        log(`${chalk.red(`[REGISTER]`)} Failed - ${error.message}`);
-        return res.status(404).json({status: 404, code: error.code, message: error.message});
-    }
-
-    
-    return res.status(404).json({status: 404, message: "Username / Password / Email is incorrect."});
-
-});
+    const {user_id, password, email, phone, role, firstname, lastname, status} = req.body;
+    const createUser = await new Std().regisUser(user_id, password, email, phone, role, firstname, lastname, status);
+    return res.json(createUser);
+})
 
 app.get('/api/course/allCourse', async (req, res) => {
 
