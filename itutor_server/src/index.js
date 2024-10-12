@@ -136,10 +136,10 @@ class StdDatabase {
         }
     }
 
-    async createUser(user_id, password, email, phone, role, firstname, lastname, status) {
+    async createUser(user_id, password, email, phone, firstname, lastname) {
         try {
-            const sql = 'INSERT INTO users (user_id, password, email, phone, role, firstname, lastname, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-            const values = [user_id, password, email, phone, role, firstname, lastname, status];
+            const sql = 'INSERT INTO users (user_id, password, email, phone, firstname, lastname) VALUES (?, ?, ?, ?, ?, ?)';
+            const values = [user_id, password, email, phone, firstname, lastname];
             const [rows, fields] = await db.execute(sql, values);
             if (rows.affectedRows > 0) {
                 return {status: 200, message: "User created successfully"};
@@ -204,8 +204,8 @@ app.post('/api/auth/login', async (req, res) => {
 })
 
 app.post('/api/auth/register', async (req, res) => {
-    const {user_id, password, email, phone, role, firstname, lastname, status} = req.body;
-    const createUser = await new Std().regisUser(user_id, password, email, phone, role, firstname, lastname, status);
+    const {user_id, password, email, phone, firstname, lastname} = req.body;
+    const createUser = await new Std().regisUser(user_id, password, email, phone, firstname, lastname);
     return res.json(createUser);
 })
 
