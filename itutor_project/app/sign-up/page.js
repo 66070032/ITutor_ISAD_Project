@@ -22,7 +22,8 @@ export default function SignUp() {
     }
   }
   return (
-    <div className="bg-cyan-600 h-screen flex items-center justify-center relative">
+    <div className="bg-cover bg-center h-screen flex items-center justify-center relative"
+    style={{ backgroundImage: "url('/bg.jpg')" }}>
 
       {/* Top Navigation (Logo on the left, Sign-in link on the right) */}
       <div className="absolute top-0 left-0 right-0 flex justify-between p-4">
@@ -42,17 +43,17 @@ export default function SignUp() {
         </div>
 
         {/* Sign-in Link */}
-        <div className="text-white m-8">
+        <div className="text-black m-8">
           Already have an account?{' '}
           <Link href="/sign-in" className="text-blue-200 underline hover:text-white">
             Sign in
           </Link>
         </div>
       </div>
-
+    
       {/* Sign Up Form Box */}
       <div className="h-96 text-center">
-        <div className="bg-blue-200 shadow-md rounded px-8 pt-6 pb-8">
+        <div className="bg-opacity-90 shadow-2xl rounded px-8 pt-6 pb-8">
           <p className="text-gray-700 text-lg mb-4 text-base">* Welcome to iTutor, Please fill your information.</p>
           <form>
             <div className="grid grid-cols-2 gap-4">
@@ -155,7 +156,7 @@ export default function SignUp() {
 
             <div className="flex justify-center">
               <button
-                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-xl focus:outline-none focus:shadow-outline"
                 type="button" onClick={() => signupAPI(document.getElementById('username').value, document.getElementById('password').value)}
               >
                 Sign up
