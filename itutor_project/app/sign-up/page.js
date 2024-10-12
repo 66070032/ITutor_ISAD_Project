@@ -3,13 +3,21 @@ import Link from "next/link";
 import React from 'react';
 
 export default function SignUp() {
-  const signupAPI = async (username, password) => {
+  const signupAPI = async (doc) => {
+    const data = {
+      user_id: document.getElementById('username').value,
+      password: document.getElementById('password').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      firstname: document.getElementById('firstname').value,
+      lastname: document.getElementById('lastname').value,
+    };
     const response = await fetch("http://localhost:3100/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ user_id: username, password: password }),
+      body: JSON.stringify({ user_id: data.user_id, password: data.password, email: data.email, phone: data.phone, firstname: data.firstname, lastname: data.lastname }),
     });
     const result = await response.json();
     if (result.status == 200) {
@@ -156,8 +164,10 @@ export default function SignUp() {
 
             <div className="flex justify-center">
               <button
-                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-xl focus:outline-none focus:shadow-outline"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
                 type="button" onClick={() => signupAPI(document.getElementById('username').value, document.getElementById('password').value)}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
+                type="button" onClick={() => signupAPI(document)}
               >
                 Sign up
               </button>
