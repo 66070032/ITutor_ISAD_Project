@@ -52,49 +52,111 @@ export default function SignUp() {
 
       {/* Sign Up Form Box */}
       <div className="h-96 text-center">
-        <div className="bg-blue-200 shadow-md rounded px-8 pt-6 pb-8 mt-4">
+        <div className="bg-blue-200 shadow-md rounded px-8 pt-6 pb-8">
           <p className="text-gray-700 text-lg mb-4 text-base">* Welcome to iTutor, Please fill your information.</p>
           <form>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="email">
-                Enter username or email
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email"
-                type="email"
-                placeholder=""
-              />
-            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Left Column */}
+              <div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="username">
+                    Username
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="username"
+                    type="email"
+                    placeholder=""
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="firstname">
+                    First name
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="firstname"
+                    type="text"
+                    placeholder=""
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="lastname">
+                    Last name
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="lastname"
+                    type="text"
+                    placeholder=""
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="age">
+                    Age
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="age"
+                    type="number"
+                    placeholder=""
+                  />
+                </div>
+              </div>
 
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="password">
-                Enter password
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="password"
-                type="password"
-                placeholder=""
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="confirm-password">
-                Confirm Password
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="confirm-password"
-                type="password"
-                placeholder=""
-              />
+              {/* Right Column */}
+              <div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="email">
+                    Email
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="email"
+                    type="email"
+                    placeholder=""
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="phone">
+                    Phone number
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="phone"
+                    type="tel"
+                    placeholder=""
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="password">
+                    Password
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="password"
+                    type="password"
+                    placeholder=""
+                  />
+                </div>
+                <div className="mb-6">
+                  <label className="block text-gray-700 text-sm font-bold mb-2 text-left" htmlFor="confirm-password">
+                    Confirm Password
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="confirm-password"
+                    type="password"
+                    placeholder=""
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="flex justify-center">
               <button
                 className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline"
-                type="button" onClick={() => signupAPI(document.getElementById('email').value, document.getElementById('password').value)}
+                type="button" onClick={() => signupAPI(document.getElementById('username').value, document.getElementById('password').value)}
               >
                 Sign up
               </button>
