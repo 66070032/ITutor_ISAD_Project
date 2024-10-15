@@ -96,9 +96,9 @@ export default function Home() {
           
 
           {getTopic.map((topic) => (
-            <div className="bg-white shadow-md rounded-xl overflow-hidden w-full h-[300px]">
+            <div className="bg-white shadow-md rounded-xl overflow-hidden w-full h-[300px]" id={topic.course_id}>
               <img
-                src="https://via.placeholder.com/300"
+                src={topic.image}
                 alt="Card Image"
                 className="w-full h-48 object-cover"
               />
