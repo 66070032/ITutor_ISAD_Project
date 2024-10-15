@@ -96,7 +96,7 @@ export default function Home() {
           
 
           {getTopic.map((topic) => (
-            <div className="bg-white shadow-md rounded-xl overflow-hidden w-full h-[300px]" id={topic.course_id} key={topic.course_id} onClick={() => {
+            <div className="bg-white shadow-md rounded-xl overflow-hidden w-full h-[300px] hover:cursor-pointer" id={topic.course_id} key={topic.course_id} onClick={() => {
               window.location.href = "../?"+topic.course_id;
             }}>
               <img
@@ -120,7 +120,7 @@ export default function Home() {
           
           {/* Card 6 */}
 
-          <div className="bg-white shadow-md rounded-xl flex justify-center items-center">
+          <div className="bg-white shadow-md rounded-xl flex justify-center items-center hover:cursor-pointer">
             <Link href="#">
               <div className="p-4">
                 <h2 className="text-xl font-semibold text-center">SEE ALL</h2>
