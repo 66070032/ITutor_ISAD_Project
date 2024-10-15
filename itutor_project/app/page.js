@@ -96,7 +96,9 @@ export default function Home() {
           
 
           {getTopic.map((topic) => (
-            <div className="bg-white shadow-md rounded-xl overflow-hidden w-full h-[300px]" id={topic.course_id}>
+            <div className="bg-white shadow-md rounded-xl overflow-hidden w-full h-[300px]" id={topic.course_id} key={topic.course_id} onClick={() => {
+              window.location.href = "../?"+topic.course_id;
+            }}>
               <img
                 src={topic.image}
                 alt="Card Image"
