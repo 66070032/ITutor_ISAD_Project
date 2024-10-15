@@ -166,6 +166,16 @@ class TpcDatabase {
         }
         return {status: 400, message: "Failed to load topic."};
     }
+
+    async topTopic() {
+        try {
+            const sql = 'SELECT * FROM courses ORDER BY course_pax DESC LIMIT 5';
+            const [result, fields] = await db.execute(sql);
+            return result;
+        } catch (error) {
+            return {status: 404, code: error.code, message: error.message};
+        }
+    }
 }
 
 app.listen(api_port, async () => {
@@ -209,11 +219,16 @@ app.post('/api/auth/register', async (req, res) => {
     return res.json(createUser);
 })
 
-app.post('/api/course/getCourse', async (req, res) => {
+app.post('/api/course/top5Course', async (req, res) => {
+    const topic = await new TpcDatabase().topTopic();
+    return res.json(topic);
+})
+
+/* app.post('/api/course/getCourse', async (req, res) => {
     const {course_id} = req.body;
     const topic = await new Std().viewTopic(course_id);
     return res.json(topic);
-});
+}); */
 
 app.get('/api/course/allCourse', async (req, res) => {
 

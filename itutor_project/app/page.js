@@ -1,6 +1,7 @@
-// import Image from "next/image";
+"use client";
 import Link from "next/link";
 import { Irish_Grover } from "next/font/google";
+import { useEffect, useState } from 'react';
 
 const irishGrover = Irish_Grover({
   weight: "400",
@@ -8,6 +9,34 @@ const irishGrover = Irish_Grover({
 });
 
 export default function Home() {
+
+
+
+
+  const [getTopic, setTopics] = useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const topic = await fetch("http://localhost:3100/api/course/top5Course", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+        const topics = await topic.json();
+        setTopics(topics)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+
+
+
+
   return (
     <div>
       <div className="bg-[url('./src/bg-home-org.svg')]  bg-center h-screen bg-cover">
@@ -64,91 +93,29 @@ export default function Home() {
 
         {/*Card Of Topic*/}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 mx-24">
-          {/* Card 1 */}
-          <div className="bg-white shadow-md rounded-xl overflow-hidden w-full h-[300px]">
-            <img
-              src="https://via.placeholder.com/300"
-              alt="Card Image"
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-center">
-                Card Title 1
-              </h2>
-              <p className="text-gray-700 text-center">
-                This is a brief description of the card content.
-              </p>
-            </div>
-          </div>
+          
 
-          {/* Card 2 */}
-          <div className="bg-white shadow-md rounded-xl overflow-hidden">
-            <img
-              src="https://via.placeholder.com/300"
-              alt="Card Image"
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-center">
-                Card Title 2
-              </h2>
-              <p className="text-gray-700 text-center">
-                This is a brief description of the card content.
-              </p>
+          {getTopic.map((topic) => (
+            <div className="bg-white shadow-md rounded-xl overflow-hidden w-full h-[300px]">
+              <img
+                src="https://via.placeholder.com/300"
+                alt="Card Image"
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4">
+                <h2 className="text-xl font-semibold text-center">
+                  {topic.course_name}
+                </h2>
+                <p className="text-gray-700 text-center">
+                  {topic.course_desc}
+                </p>
+              </div>
             </div>
-          </div>
 
-          {/* Card 3 */}
-          <div className="bg-white shadow-md rounded-xl overflow-hidden">
-            <img
-              src="https://via.placeholder.com/300"
-              alt="Card Image"
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-center">
-                Card Title 3
-              </h2>
-              <p className="text-gray-700 text-center">
-                This is a brief description of the card content.
-              </p>
-            </div>
-          </div>
+          ))}
 
-          {/* Card 4 */}
-          <div className="bg-white shadow-md rounded-xl overflow-hidden">
-            <img
-              src="https://via.placeholder.com/300"
-              alt="Card Image"
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-center">
-                Card Title 4
-              </h2>
-              <p className="text-gray-700 text-center">
-                This is a brief description of the card content.
-              </p>
-            </div>
-          </div>
 
-          {/* Card 5 */}
-          <div className="bg-white rounded-xl overflow-hidden">
-            <img
-              src="https://via.placeholder.com/300"
-              alt="Card Image"
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-center">
-                Card Title 5
-              </h2>
-              <p className="text-gray-700 text-center">
-                This is a brief description of the card content.
-              </p>
-            </div>
-          </div>
-
+          
           {/* Card 6 */}
 
           <div className="bg-white shadow-md rounded-xl flex justify-center items-center">
