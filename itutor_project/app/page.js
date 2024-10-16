@@ -11,10 +11,16 @@ const irishGrover = Irish_Grover({
 export default function Home() {
 
 
-
-
+  const [isLogin, setLogin] = useState(false);
   const [getTopic, setTopics] = useState([])
   useEffect(() => {
+
+    const cookies = document.cookie.split('; ');
+    const tokenExists = cookies.some(cookie => cookie.startsWith('users='));
+
+    setLogin(tokenExists);
+
+
     const fetchData = async () => {
       try {
         const topic = await fetch("http://localhost:3100/api/course/top5Course", {
@@ -45,14 +51,17 @@ export default function Home() {
           <div className={irishGrover.className}>
             <img className="logo h-8" src="/ITutor.svg" alt="logo" />
           </div>
-          <div className="text-right">
-            <Link href="/sign-in">
-              <button className="px-3">SIGN IN</button>
-            </Link>
-            <Link href="/sign-up">
-              <button className="px-3">SIGN UP</button>
-            </Link>
+          {isLogin ? null : (
+            <div className="text-right">
+              <Link href="/sign-in">
+                <button className="px-3">SIGN IN</button>
+              </Link>
+              <Link href="/sign-up">
+                <button className="px-3">SIGN UP</button>
+              </Link>
           </div>
+          )}
+          
         </div>
 
         <div className="w-full flex flex-col justify-center items-center h-[80vh] gap-1">
@@ -81,57 +90,62 @@ export default function Home() {
         </div>
       </div>
 
-      <div id="allCourse" className="bg-[#aed5f9] h-screen">
-        <div className="flex mx-24 py-10 gap-10">
-          <h1 className="text-[#19588a] underline text-2xl font-bold">ALL TOPIC</h1>
-          <Link href="#">
-            <button className="text-[#f8573c] text-2xl font-bold hover:underline">
-              MY TOPIC
-            </button>
-          </Link>
+            {isLogin ? (
+                <div id="allCourse" className="bg-[#aed5f9] h-screen">
+                <div className="flex mx-24 py-10 gap-10">
+                  <h1 className="text-[#19588a] underline text-2xl font-bold">ALL TOPIC</h1>
+                  <Link href="#">
+                    <button className="text-[#f8573c] text-2xl font-bold hover:underline">
+                      MY TOPIC
+                    </button>
+                  </Link>
+                </div>
+        
+                {/*Card Of Topic*/}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 mx-24">
+                  
+        
+                  {getTopic.map((topic) => (
+                    <div className="bg-white shadow-md rounded-xl overflow-hidden w-full h-[300px] hover:cursor-pointer" id={topic.course_id} key={topic.course_id} onClick={() => {
+                      window.location.href = "../?"+topic.course_id;
+                    }}>
+                      <img
+                        src={topic.image}
+                        alt="Card Image"
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="p-4">
+                        <h2 className="text-xl font-semibold text-center">
+                          {topic.course_name}
+                        </h2>
+                        <p className="text-gray-700 text-center">
+                          {topic.course_desc}
+                        </p>
+                      </div>
+                    </div>
+        
+                  ))}
+        
+        
+                  
+                  {/* Card 6 */}
+        
+                  <div className="bg-white shadow-md rounded-xl flex justify-center items-center hover:cursor-pointer">
+                    <Link href="#">
+                      <div className="p-4">
+                        <h2 className="text-xl font-semibold text-center">SEE ALL</h2>
+                      </div>
+                    </Link>
+                  </div>
+        
+                  {/* register */}
+                  <div className="h-10"></div>
+                </div>
+              </div>
+            ) : (
+                <div></div>
+            )}
         </div>
 
-        {/*Card Of Topic*/}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 mx-24">
-          
-
-          {getTopic.map((topic) => (
-            <div className="bg-white shadow-md rounded-xl overflow-hidden w-full h-[300px] hover:cursor-pointer" id={topic.course_id} key={topic.course_id} onClick={() => {
-              window.location.href = "../?"+topic.course_id;
-            }}>
-              <img
-                src={topic.image}
-                alt="Card Image"
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h2 className="text-xl font-semibold text-center">
-                  {topic.course_name}
-                </h2>
-                <p className="text-gray-700 text-center">
-                  {topic.course_desc}
-                </p>
-              </div>
-            </div>
-
-          ))}
-
-
-          
-          {/* Card 6 */}
-
-          <div className="bg-white shadow-md rounded-xl flex justify-center items-center hover:cursor-pointer">
-            <Link href="#">
-              <div className="p-4">
-                <h2 className="text-xl font-semibold text-center">SEE ALL</h2>
-              </div>
-            </Link>
-          </div>
-
-          {/* register */}
-          <div className="h-10"></div>
-        </div>
-      </div>
-    </div>
   );
 }

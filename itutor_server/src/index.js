@@ -215,7 +215,7 @@ app.post('/api/auth/login', async (req, res) => {
             secure: true,
             sameSite: 'None'
         }
-        res.cookie('users', {user_id, password}, options) // options is optional
+        res.cookie('users', {user_id}, options) // options is optional
     }
     return res.json(checkUser);
 })
