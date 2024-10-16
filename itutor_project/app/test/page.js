@@ -29,7 +29,7 @@ export default function test() {
   return (
     <div>
       {getTopic.map((topic) => (
-        <div className="p-4">
+        <div className="p-4" key={topic.course_id}>
           <h2 className="text-xl font-semibold text-center">
             Topic Name: {topic.course_name}
           </h2>
