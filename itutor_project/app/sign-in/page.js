@@ -1,14 +1,26 @@
 'use client';
-import React from 'react';
-
+import { React } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function SignIn() {
+
+  useEffect(() => {
+      const cookies = document.cookie.split('; ');
+      const tokenExists = cookies.some(cookie => cookie.startsWith('users='));
+
+      if (tokenExists) {
+          window.location.href = "../";
+      }
+  }, []);
+
+
   const getData = async (username, password) => {
     let response = await fetch("http://localhost:3100/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: 'include', // ส่ง cookies ไปด้วย
       body: JSON.stringify({ user_id: username, password: password }),
     });
     const result = await response.json();
@@ -21,6 +33,8 @@ export default function SignIn() {
       alert(result.message);
     }
   }
+
+
   return (
     <div className="bg-white h-screen flex items-center justify-center">
       <div className="w-full max-w-xs text-center">

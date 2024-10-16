@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const chalk = require('chalk');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 let api_port = 3100;
 let log = (msg) => {
@@ -195,21 +196,27 @@ app.listen(api_port, async () => {
 });
 
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser("secret"));
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}));
 
 app.get('/', async (req, res) => {
-    return res.status(200).send("Server is running...");
+    return res.json({status: 200, message: "Server is running"});
 });
-
-/* app.post('/test', async (req, res) => {
-    const {course_id} = req.body;
-    const topic = await new Std().viewTopic(course_id);
-    return res.json(topic);
-}) */
 
 app.post('/api/auth/login', async (req, res) => {
     const {user_id, password} = req.body;
     const checkUser = await new Std().checkUser(user_id, password);
+    if (checkUser.status == 200 && req.signedCookies.users == undefined) {
+        let options = {
+            maxAge: 1000 * 60 * 60,
+            secure: true,
+            sameSite: 'None'
+        }
+        res.cookie('users', {user_id, password}, options) // options is optional
+    }
     return res.json(checkUser);
 })
 

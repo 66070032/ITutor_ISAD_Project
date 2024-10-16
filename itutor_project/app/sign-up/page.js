@@ -1,8 +1,18 @@
 'use client';
 import Link from "next/link";
 import React from 'react';
+import { useEffect, useState } from 'react';
 
 export default function SignUp() {
+
+  useEffect(() => {
+    const cookies = document.cookie.split('; ');
+    const tokenExists = cookies.some(cookie => cookie.startsWith('users='));
+
+    if (tokenExists) {
+        window.location.href = "../";
+    }
+}, []);
   const signupAPI = async (doc) => {
     const data = {
       user_id: document.getElementById('username').value,
