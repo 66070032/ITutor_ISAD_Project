@@ -231,11 +231,11 @@ app.post('/api/course/top5Course', async (req, res) => {
     return res.json(topic);
 })
 
-/* app.post('/api/course/getCourse', async (req, res) => {
+app.post('/api/course/getCourse', async (req, res) => {
     const {course_id} = req.body;
     const topic = await new Std().viewTopic(course_id);
-    return res.json(topic);
-}); */
+    return res.send(topic);
+});
 
 app.get('/api/course/allCourse', async (req, res) => {
 
