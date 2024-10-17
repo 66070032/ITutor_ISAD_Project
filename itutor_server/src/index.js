@@ -155,12 +155,13 @@ class StdDatabase {
 class TpcDatabase {
     async pullTopic(course_id) {
         try {
-            const sql = 'SELECT * FROM courses WHERE course_id = ?';
+            const sql = 'SELECT * FROM courses c, users u WHERE c.course_id = ? AND c.owner_id = u.user_id';
             const values = [course_id];
             const [rows, fields] = await db.execute(sql, values);
             if (rows.length == 0) {
                 return {status: 400, message: "Course ID is incorrect."};
             }
+            console.log(rows);
             return {status: 200, data: rows};
         } catch (error) {
             return {status: 400, code: error.code, message: error.message};
