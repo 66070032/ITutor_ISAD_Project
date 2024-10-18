@@ -15,7 +15,7 @@ export default function SignIn() {
 
 
   const getData = async (username, password) => {
-    let response = await fetch("http://api.itutor.jokeped.net:3100/api/auth/login", {
+    let response = await fetch("http://localhost:3100/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
