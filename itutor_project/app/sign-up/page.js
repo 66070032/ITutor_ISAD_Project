@@ -22,7 +22,7 @@ export default function SignUp() {
       firstname: document.getElementById('firstname').value,
       lastname: document.getElementById('lastname').value,
     };
-    const response = await fetch("http://localhost:3100/api/auth/register", {
+    const response = await fetch("http://api.itutor.jokeped.net:3100/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

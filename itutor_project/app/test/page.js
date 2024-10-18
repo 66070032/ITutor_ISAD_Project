@@ -13,7 +13,7 @@ export default function test() {
   
   useEffect(() => {
     const search = async () => {
-      let response = await fetch("http://localhost:3100/api/course/getCourse", {
+      let response = await fetch("http://api.itutor.jokeped.net:3100/api/course/getCourse", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
