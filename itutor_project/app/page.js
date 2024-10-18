@@ -23,7 +23,7 @@ export default function Home() {
 
     const fetchData = async () => {
       try {
-        const topic = await fetch("http://localhost:3100/api/course/top5Course", {
+        const topic = await fetch("http://api.itutor.jokeped.net:3100/api/course/top5Course", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
