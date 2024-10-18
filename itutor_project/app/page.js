@@ -10,7 +10,6 @@ const irishGrover = Irish_Grover({
 
 export default function Home() {
 
-
   const [isLogin, setLogin] = useState(false);
   const [getTopic, setTopics] = useState([])
   useEffect(() => {
@@ -38,9 +37,13 @@ export default function Home() {
 
     fetchData()
   }, [])
+  const handleLogout = () => {
+    document.cookie = 'users=; Max-Age=0; path=/';
 
+    setLogin(false);
 
-
+    window.location.reload();
+  };
 
 
   return (
@@ -51,17 +54,20 @@ export default function Home() {
           <div className={irishGrover.className}>
             <img className="logo h-8" src="/ITutor.svg" alt="logo" />
           </div>
-          {isLogin ? null : (
-            <div className="text-right">
-              <Link href="/sign-in">
-                <button className="px-3">SIGN IN</button>
-              </Link>
-              <Link href="/sign-up">
-                <button className="px-3">SIGN UP</button>
-              </Link>
+          <div className="text-right">
+            {isLogin ? (
+              <button className="px-3" onClick={handleLogout}>LOG OUT</button>
+            ) : (
+              <div className="text-right">
+                <Link href="/sign-in">
+                  <button className="px-3">SIGN IN</button>
+                </Link>
+                <Link href="/sign-up">
+                  <button className="px-3">SIGN UP</button>
+                </Link>
+              </div>
+            )}
           </div>
-          )}
-          
         </div>
 
         <div className="w-full flex flex-col justify-center items-center h-[80vh] gap-1">
