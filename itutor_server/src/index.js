@@ -199,7 +199,11 @@ app.listen(api_port, async () => {
 app.use(express.json());
 app.use(cookieParser("secret"));
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: [
+        "http://localhost:3000",
+        "http://itutor.jokeped.net:3000",
+        "http://api.itutor.jokeped.net:3100"
+    ],
     credentials: true
 }));
 
