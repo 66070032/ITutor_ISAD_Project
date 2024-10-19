@@ -13,8 +13,11 @@ export default function SignIn() {
       }
   }, []);
 
-
   const getData = async (username, password) => {
+    if (!username || !password) {
+      alert("Please fill both username and password.");
+      return;
+    }
     let response = await fetch("http://localhost:3100/api/auth/login", {
       method: "POST",
       headers: {
@@ -24,13 +27,20 @@ export default function SignIn() {
       body: JSON.stringify({ user_id: username, password: password }),
     });
     const result = await response.json();
+
     if (result.status == 200) {
       // Success Functions
       window.location.href = "../";
       // alert(result.message);
     } else {
+      if (result.message === "Username or Password is incorrect.") {
+        alert("Username is not exist.");
+      } else if (result.message === "Login failed") {
+        alert("Password is incorrect.");
+      } else {
       // Failed Functions
-      alert(result.message);
+        alert(result.message);
+      }
     }
   }
 
