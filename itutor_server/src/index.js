@@ -106,6 +106,16 @@ class Std {
         const topic = await new TpcDatabase().pullTopic(course_id);
         return topic;
     }
+
+    async myCourse(user_id) {
+        const myCourse = await new TpcDatabase().myCourse(user_id);
+        return myCourse;
+    }
+
+    async enrollCourse (user_id, course_id) {
+        const enrollCourse = await new TpcDatabase().enrollCourse(user_id, course_id);
+        return enrollCourse;
+    }
 }
 
 class encryptPassword {
@@ -161,7 +171,7 @@ class TpcDatabase {
             if (rows.length == 0) {
                 return {status: 400, message: "Course ID is incorrect."};
             }
-            console.log(rows);
+            // console.log(rows);
             return {status: 200, data: rows};
         } catch (error) {
             return {status: 400, code: error.code, message: error.message};
@@ -176,6 +186,32 @@ class TpcDatabase {
             return result;
         } catch (error) {
             return {status: 404, code: error.code, message: error.message};
+        }
+    }
+
+    async myCourse(user_id) {
+        try {
+            const sql = 'SELECT * FROM courses c, user_course uc WHERE c.course_id = uc.course_id AND uc.user_id = ?';
+            const values = [user_id];
+            const [rows, fields] = await db.execute(sql, values);
+            console.log(rows)
+            return rows;
+        } catch (error) {
+            return {status: 404, code: error.code, message: error.message};
+        }
+    }
+
+    async enrollCourse(user_id, course_id) {
+        try {
+            const sql = 'INSERT INTO user_course (user_id, course_id) VALUES (?, ?)';
+            const values = [user_id, course_id];
+            const [rows, fields] = await db.execute(sql, values);
+            if (rows.affectedRows > 0) {
+                return {status: 200, message: "Enroll Successful"};
+            }
+            return {status: 400, message: "Enroll Failed"};
+        } catch (error) {
+            return {status: 400, code: error.code, message: error.message};
         }
     }
 }
@@ -242,7 +278,19 @@ app.post('/api/course/getCourse', async (req, res) => {
     return res.send(topic);
 });
 
-app.get('/api/course/allCourse', async (req, res) => {
+app.post('/api/course/myCourse', async (req, res) => {
+    const {user_id} = req.body;
+    const topic = await new Std().myCourse(user_id);
+    return res.send(topic);
+})
+
+app.post('/api/course/enrollCourse', async (req, res) => {
+    const {user_id, course_id} = req.body;
+    const topic = await new Std().enrollCourse(user_id, course_id);
+    return res.send(topic);
+})
+
+/* app.get('/api/course/allCourse', async (req, res) => {
 
     try {
         const sql = 'SELECT * FROM courses';
@@ -309,4 +357,4 @@ app.post('/api/course/createCourse', async (req, res) => {
 
     return res.status(404).json({status: 404, message: "Create Course Failed"});
 
-})
+}) */

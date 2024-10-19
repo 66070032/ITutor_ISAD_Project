@@ -37,6 +37,41 @@ export default function Home() {
 
     fetchData()
   }, [])
+
+  const alltopic = async () => {
+    try {
+      const topic = await fetch("http://localhost:3100/api/course/top5Course", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      const topics = await topic.json();
+      setTopics(topics)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const myTopicHandler = async () => {
+    const cookieValue = document.cookie
+                .split('; ')
+                .find((row) => row.startsWith(`users=j%3A%7B%22user_id%22%3A%22`))
+                ?.split('%3A%22')[1].split('%22%7D')[0];
+    try {
+      const topic = await fetch("http://localhost:3100/api/course/myCourse", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: cookieValue }),
+      });
+      const topics = await topic.json();
+      setTopics(topics)
+    } catch (error) {
+      console.error(error)
+    }
+  }
   const handleLogout = () => {
     document.cookie = 'users=; Max-Age=0; path=/';
 
@@ -99,12 +134,12 @@ export default function Home() {
             {isLogin ? (
                 <div id="allCourse" className="bg-[#aed5f9] h-screen">
                 <div className="flex mx-24 py-10 gap-10">
-                  <h1 className="text-[#19588a] underline text-2xl font-bold">ALL TOPIC</h1>
-                  <Link href="#">
-                    <button className="text-[#f8573c] text-2xl font-bold hover:underline">
+                  <button className="text-[#19588a] underline text-2xl font-bold" onClick={alltopic}>ALL TOPIC</button>
+                  {/* <Link href="#"> */}
+                    <button className="text-[#f8573c] text-2xl font-bold hover:underline" onClick={myTopicHandler}>
                       MY TOPIC
                     </button>
-                  </Link>
+                  {/* </Link> */}
                 </div>
         
                 {/*Card Of Topic*/}
@@ -149,7 +184,7 @@ export default function Home() {
                 </div>
               </div>
             ) : (
-                <div></div>
+                null
             )}
         </div>
 

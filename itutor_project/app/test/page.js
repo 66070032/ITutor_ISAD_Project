@@ -5,9 +5,35 @@ import { useEffect, useState } from 'react';
 
 export default function test() {
 
+  const cookieValue = document.cookie
+                .split('; ')
+                .find((row) => row.startsWith(`users=j%3A%7B%22user_id%22%3A%22`))
+                ?.split('%3A%22')[1].split('%22%7D')[0];
+
   const [getTopic, setTopics] = useState([])
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
+
+  const enroll = async () => {
+    let response = await fetch("http://localhost:3100/api/course/enrollCourse", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: cookieValue, course_id: id }),
+    });
+    const result = await response.json();
+    if (result.status == 200) {
+      alert(result.message)
+      window.location.href = "../";
+    } else {
+      if (result.code == "ER_DUP_ENTRY") {
+        alert("You already enroll this course.")
+      }
+      // alert(result.code)
+    }
+    console.log(result)
+  }
 
   
   
@@ -63,7 +89,7 @@ export default function test() {
 
           <div className="mt-14 flex justify-center items-center">
             <a href="">
-              <button className="w-40 p-2 rounded-[30px] bg-[#f8573c]">JOIN</button>
+              <button className="w-40 p-2 rounded-[30px] bg-[#f8573c]" onClick={enroll}>JOIN</button>
             </a>
           </div>
         </div>
