@@ -10,6 +10,7 @@ export default function test() {
   const cookieValue = document.cookie.split('; ').find((row) => row.startsWith(`users=j%3A%7B%22user_id%22%3A%22`))?.split('%3A%22')[1].split('%22%7D')[0];
 
   const [getTopic, setTopics] = useState([])
+  const [isEnrolled, setIsEnrolled] = useState(false);
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
@@ -24,10 +25,12 @@ export default function test() {
     const result = await response.json();
     if (result.status == 200) {
       alert(result.message)
+      setIsEnrolled(true);
       window.location.href = "../";
     } else {
       if (result.code == "ER_DUP_ENTRY") {
         alert("You already enroll this course.")
+        setIsEnrolled(true);
       }
       // alert(result.code)
     }
@@ -47,8 +50,7 @@ export default function test() {
     console.log(cookieValue, course_id, result)
   }
 
-  
-  
+
   useEffect(() => {
     const search = async () => {
       let response = await fetch("http://localhost:3100/api/course/getCourse", {
@@ -61,6 +63,9 @@ export default function test() {
       });
       const result = await response.json();
       setTopics(result.data)
+    };
+    if (id) { // Only run if id is available
+      search();
     }
     search();
     isEnroll(id);
