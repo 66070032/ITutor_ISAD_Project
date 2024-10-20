@@ -116,6 +116,11 @@ class Std {
         const enrollCourse = await new TpcDatabase().enrollCourse(user_id, course_id);
         return enrollCourse;
     }
+
+    async isEnroll (user_id, course_id) {
+        const isEnroll = await new TpcDatabase().isEnroll(user_id, course_id);
+        return isEnroll;
+    }
 }
 
 class encryptPassword {
@@ -214,6 +219,20 @@ class TpcDatabase {
             return {status: 400, code: error.code, message: error.message};
         }
     }
+
+    async isEnroll(user_id, course_id) {
+        try {
+            const sql = 'SELECT * FROM user_course WHERE user_id = ? AND course_id = ?';
+            const values = [user_id, course_id];
+            const [rows, fields] = await db.execute(sql, values);
+            if (rows.length == 0) {
+                return false;
+            }
+            return true;
+        } catch (error) {
+            return {status: 404, code: error.code, message: error.message};
+        }
+    }
 }
 
 app.listen(api_port, async () => {
@@ -281,6 +300,12 @@ app.post('/api/course/getCourse', async (req, res) => {
 app.post('/api/course/myCourse', async (req, res) => {
     const {user_id} = req.body;
     const topic = await new Std().myCourse(user_id);
+    return res.send(topic);
+})
+
+app.post('/api/course/isEnroll', async (req, res) => {
+    const {user_id, course_id} = req.body;
+    const topic = await new Std().isEnroll(user_id, course_id);
     return res.send(topic);
 })
 

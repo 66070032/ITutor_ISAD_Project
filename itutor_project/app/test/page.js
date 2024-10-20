@@ -5,10 +5,9 @@ import { useEffect, useState } from 'react';
 
 export default function test() {
 
-  const cookieValue = document.cookie
-                .split('; ')
-                .find((row) => row.startsWith(`users=j%3A%7B%22user_id%22%3A%22`))
-                ?.split('%3A%22')[1].split('%22%7D')[0];
+  const [getIsEnroll, setIsEnroll] = useState(false);
+
+  const cookieValue = document.cookie.split('; ').find((row) => row.startsWith(`users=j%3A%7B%22user_id%22%3A%22`))?.split('%3A%22')[1].split('%22%7D')[0];
 
   const [getTopic, setTopics] = useState([])
   const searchParams = useSearchParams();
@@ -32,7 +31,20 @@ export default function test() {
       }
       // alert(result.code)
     }
-    console.log(result)
+    // console.log(result)
+  }
+
+  const isEnroll = async (course_id) => {
+    let response = await fetch("http://localhost:3100/api/course/isEnroll", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: cookieValue, course_id: course_id }),
+    });
+    const result = await response.json();
+    setIsEnroll(result)
+    console.log(cookieValue, course_id, result)
   }
 
   
@@ -51,6 +63,7 @@ export default function test() {
       setTopics(result.data)
     }
     search();
+    isEnroll(id);
   }, []);
  
   return (
@@ -89,7 +102,11 @@ export default function test() {
 
           <div className="mt-14 flex justify-center items-center">
             <a href="">
-              <button className="w-40 p-2 rounded-[30px] bg-[#f8573c]" onClick={enroll}>JOIN</button>
+              { getIsEnroll ? 
+                <button className="w-40 p-2 rounded-[30px] bg-[#f8573c]">Exercise</button> :
+                <button className="w-40 p-2 rounded-[30px] bg-[#f8573c]" onClick={enroll}>JOIN</button>
+              }
+              
             </a>
           </div>
         </div>
