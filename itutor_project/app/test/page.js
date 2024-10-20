@@ -11,6 +11,7 @@ export default function test() {
                 ?.split('%3A%22')[1].split('%22%7D')[0];
 
   const [getTopic, setTopics] = useState([])
+  const [isEnrolled, setIsEnrolled] = useState(false);
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
@@ -25,18 +26,33 @@ export default function test() {
     const result = await response.json();
     if (result.status == 200) {
       alert(result.message)
+      setIsEnrolled(true);
+      await checkEnrollmentStatus();
       window.location.href = "../";
     } else {
       if (result.code == "ER_DUP_ENTRY") {
         alert("You already enroll this course.")
+        setIsEnrolled(true);
       }
       // alert(result.code)
     }
     console.log(result)
+
+  }
+  const checkEnrollmentStatus = async () => {
+    let response = await fetch("http://localhost:3100/api/course/checkEnrollment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: cookieValue, course_id: id }),
+    });
+    const result = await response.json();
+    console.log(result);
+    setIsEnrolled(result.isEnrolled);
   }
 
-  
-  
+
   useEffect(() => {
     const search = async () => {
       let response = await fetch("http://localhost:3100/api/course/getCourse", {
@@ -49,9 +65,12 @@ export default function test() {
       });
       const result = await response.json();
       setTopics(result.data)
+      await checkEnrollmentStatus();
+    };
+    if (id) { // Only run if id is available
+      search();
     }
-    search();
-  }, []);
+  }, [id]);
  
   return (
     <div className="h-screen">
@@ -88,9 +107,11 @@ export default function test() {
           </div>
 
           <div className="mt-14 flex justify-center items-center">
-            <a href="">
+          {!isEnrolled ? (
               <button className="w-40 p-2 rounded-[30px] bg-[#f8573c]" onClick={enroll}>JOIN</button>
-            </a>
+            ) : (
+              <button className="w-40 p-2 rounded-[30px] bg-[#f8573c]" >EXERCISE</button>
+            )}
           </div>
         </div>
       ))}
