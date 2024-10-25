@@ -60,7 +60,7 @@ let db;
 async function getConnection() {
     try {
         db = await mysql.createConnection({
-            host: 'db.itutor.jokeped.net',
+            host: '141.11.158.227',
             user: 'itutor',
             password: 'v(2@jwAjq1uK7PCp',
             database: 'itutor',
