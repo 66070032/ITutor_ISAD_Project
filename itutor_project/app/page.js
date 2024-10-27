@@ -12,6 +12,7 @@ export default function Home() {
 
   const [isLogin, setLogin] = useState(false);
   const [getTopic, setTopics] = useState([])
+  const [getAll, setAll] = useState(false);
   useEffect(() => {
 
     const cookies = document.cookie.split('; ');
@@ -48,6 +49,22 @@ export default function Home() {
       });
       const topics = await topic.json();
       setTopics(topics)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const loadTopic = async () => {
+    try {
+      const topic = await fetch("http://localhost:3100/api/course/allCourse", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      const topics = await topic.json();
+      setTopics(topics.data)
+      setAll(true)
     } catch (error) {
       console.error(error)
     }
@@ -170,14 +187,17 @@ export default function Home() {
         
                   
                   {/* Card 6 */}
-        
-                  <div className="bg-white shadow-md rounded-xl flex justify-center items-center hover:cursor-pointer">
-                    <Link href="#">
+
+                  { getAll ? 
+                    (null)
+                  : <div className="bg-white shadow-md rounded-xl flex justify-center items-center hover:cursor-pointer" onClick={loadTopic}>
                       <div className="p-4">
                         <h2 className="text-xl font-semibold text-center">SEE ALL</h2>
                       </div>
-                    </Link>
-                  </div>
+                    </div>
+                  }
+        
+                  
         
                   {/* register */}
                   <div className="h-10"></div>
