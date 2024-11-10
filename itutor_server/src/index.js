@@ -167,7 +167,105 @@ class StdDatabase {
     }
 }
 
+class Topic {
+    async getId() {
+        return this.topic_id;
+    }
+
+    async getName() {
+        return this.name;
+    }
+
+    async getDescription() {
+        return this.description;
+    }
+
+    async getMeetingPlace() {
+        return this.meeting_place;
+    }
+
+    async getDateTime() {
+        return this.date_time;
+    }
+
+    async getMaxParticipants() {
+        return this.max_participants;
+    }
+
+    async setName(name) {
+        return this.name = name;
+    }
+
+    async setDescription(desc) {
+        return this.description = desc;
+    }
+
+    async setMeetingPlace(place) {
+        return this.meeting_place = place;
+    }
+
+    async setDateTime(dt) {
+        return this.date_time = dt;
+    }
+
+    async setMaxParticipants(max_participants) {
+        return this.max_participants = max_participants;
+    }
+
+    async deleteTopic(topic) {
+        return await new TpcDatabase().deleteTopic(topic);
+    }
+
+    async checkTopicEndTime(topicId) {
+        return await new TpcDatabase().checkTopicEndTime(topicId);
+    }
+
+    async createTopic(name, desc, meeting, date) {
+        return await new TpcDatabase().createTopic(name, desc, meeting, date);
+    }
+}
+
 class TpcDatabase {
+
+    async deleteTopic(topicId) {
+        try {
+            const sql = 'DELETE FROM courses WHERE course_id = ?';
+            const values = [topicId];
+            const [rows, fields] = await db.execute(sql, values);
+            if (rows.affectedRows > 0) {
+                return {status: 200, message: "Topic deleted successfully"};
+            }
+            return {status: 400, message: "Topic deletion failed"};
+        } catch (error) {
+            return {status: 400, code: error.code, message: error.message};
+        }
+    }
+
+    async checkTopicEndTime(topicId) {
+        try {
+            const sql = 'SELECT date_time FROM courses WHERE course_id = ?';
+            const values = [topicId];
+            const [rows, fields] = await db.execute(sql, values);
+            return rows[0].date_time;
+        } catch (error) {
+            return {status: 400, code: error.code, message: error.message};
+        }
+    }
+
+    async createTopic(name, desc, meeting, date) {
+        try {
+            const sql = 'INSERT INTO courses (name, description, meeting_place, date_time) VALUES (?, ?, ?, ?)';
+            const values = [name, desc, meeting, date];
+            const [rows, fields] = await db.execute(sql, values);
+            if (rows.affectedRows > 0) {
+                return {status: 200, message: "Topic created successfully"};
+            }
+            return {status: 400, message: "Topic creation failed"};
+        } catch (error) {
+            return {status: 400, code: error.code, message: error.message};
+        }
+    }
+
     async pullTopic(course_id) {
         try {
             const sql = 'SELECT * FROM courses c, users u WHERE c.course_id = ? AND c.owner_id = u.user_id';
@@ -315,7 +413,7 @@ app.post('/api/course/enrollCourse', async (req, res) => {
     return res.send(topic);
 })
 
-/* app.get('/api/course/allCourse', async (req, res) => {
+app.get('/api/course/allCourse', async (req, res) => {
 
     try {
         const sql = 'SELECT * FROM courses';
@@ -327,7 +425,7 @@ app.post('/api/course/enrollCourse', async (req, res) => {
 
 });
 
-app.post('/api/course/enrollCourse', async (req, res) => {
+/* app.post('/api/course/enrollCourse', async (req, res) => {
     const {user_id, course_id} = req.body;
 
     if (!user_id || !course_id) {
